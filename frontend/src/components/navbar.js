@@ -4,7 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/navbar.css";
 import Axios from "axios";
 import { Button, Navbar, Nav, Form, Modal, Alert } from "react-bootstrap";
-export default class NavBar extends React.Component {
+import { Redirect, withRouter } from "react-router-dom";
+class NavBar extends React.Component {
   constructor(props) {
     super(props);
     Axios.defaults.withCredentials = true;
@@ -34,7 +35,6 @@ export default class NavBar extends React.Component {
         this.setState({ isLogin: false });
       }
     });
-    console.log(this.state.isLogin);
   }
   handleChange = (event) => {
     const field = event.target.name;
@@ -49,7 +49,6 @@ export default class NavBar extends React.Component {
     const newUser = this.state.loginUser;
     newUser[field] = value;
     this.setState({ loginUser: newUser });
-    console.log(this.state.loginUser);
   };
   validate = (user) => {};
   register = (event) => {
@@ -59,6 +58,12 @@ export default class NavBar extends React.Component {
       user: this.state.user,
     }).then((response) => {
       this.setState({ registerStatus: response.data.message });
+      if (response.data.registered == true) {
+        this.props.history.push("/register");
+        setTimeout( () => {
+          this.props.history.push("/");
+        }, 10000);
+      }
     });
   };
   login = (event) => {
@@ -66,27 +71,46 @@ export default class NavBar extends React.Component {
     Axios.post("http://localhost:9000/login", {
       user: this.state.loginUser,
     }).then((response) => {
-      this.setState({ isLogin: true });
       this.setState({ loginStatus: response.data.message });
+      if (response.data.loggedIn == true) {
+        this.props.history.push("/login");
+        this.props.history.push("/");
+      }
+    });
+  };
+  logout = () => {
+    Axios.get("http://localhost:9000/logout").then((res) => {
+      this.props.history.push("/logout");
+      this.props.history.push("/");
     });
   };
   loginModalHide = () => {
     this.setState({ loginModal: false });
+    this.setState({ loginStatus: "" });
+    this.setState({ registerStatus: "" });
   };
   loginModalShow = () => {
     this.setState({ loginModal: true });
     this.setState({ signupModal: false });
+    this.setState({ loginStatus: "" });
+    this.setState({ registerStatus: "" });
   };
 
   signupModalHide = () => {
     this.setState({ signupModal: false });
+    this.setState({ loginStatus: "" });
+    this.setState({ registerStatus: "" });
   };
   signupModalShow = () => {
     this.setState({ signupModal: true });
     this.setState({ loginModal: false });
+    this.setState({ loginStatus: "" });
+    this.setState({ registerStatus: "" });
   };
   render() {
     var isLogin = this.state.isLogin;
+    var registerStatus = this.state.registerStatus;
+    var loginStatus = this.state.loginStatus;
     return (
       <div>
         <Navbar bg="dark" variant="dark" sticky="top">
@@ -94,7 +118,7 @@ export default class NavBar extends React.Component {
 
           {isLogin == true ? (
             <Nav className="ml-auto">
-              <Nav.Link>user</Nav.Link>
+              <Nav.Link onClick={() => this.logout()}>Logout</Nav.Link>
             </Nav>
           ) : (
             <Nav className="ml-auto">
@@ -108,7 +132,7 @@ export default class NavBar extends React.Component {
               >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                  <Alert variant="danger"> Give it a click if you like.</Alert>
+                  <Alert variant="danger">{loginStatus}</Alert>
                   <Form onSubmit={this.login}>
                     <Form.Group controlId="formBasicUser">
                       <Form.Label>User Name</Form.Label>
@@ -152,6 +176,7 @@ export default class NavBar extends React.Component {
               >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
+                  <Alert variant="danger">{registerStatus}</Alert>
                   <Form onSubmit={this.register}>
                     <Form.Group controlId="formBasicText">
                       <Form.Label>Name</Form.Label>
@@ -213,3 +238,4 @@ export default class NavBar extends React.Component {
     );
   }
 }
+export default withRouter(NavBar);

@@ -14,7 +14,6 @@ router.get("/", function (req, res) {
 router.post("/", function (req, res, next) {
   const username = req.body.user["username"];
   const password = req.body.user["password"];
-  console.log(username,password);
   conn.query(
     "SELECT * from User WHERE username = ?",
     [username],
@@ -25,12 +24,15 @@ router.post("/", function (req, res, next) {
         if (check) {
           req.session.username = username;
           req.session.userid = rows[0]["id"];
-          res.send({ message: "login successfully" });
+          res.send({ message: "login successfully", loggedIn: true });
         } else {
-          res.send({ message: "username and password do not match" });
+          res.send({
+            message: "username and password do not match",
+            loggedIn: true,
+          });
         }
       } else {
-        res.send({ message: "username do not exist" });
+        res.send({ message: "username do not exist", loggedIn: true });
       }
     }
   );
