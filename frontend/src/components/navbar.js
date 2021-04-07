@@ -13,7 +13,6 @@ class NavBar extends React.Component {
       loginModal: false,
       signupModal: false,
       user: {
-        name: "",
         username: "",
         password: "",
         email: "",
@@ -60,7 +59,7 @@ class NavBar extends React.Component {
       this.setState({ registerStatus: response.data.message });
       if (response.data.registered == true) {
         this.props.history.push("/register");
-        setTimeout( () => {
+        setTimeout(() => {
           this.props.history.push("/");
         }, 10000);
       }
@@ -75,7 +74,7 @@ class NavBar extends React.Component {
       if (response.data.loggedIn == true) {
         this.props.history.push("/login");
         this.props.history.push("/");
-      }
+      } 
     });
   };
   logout = () => {
@@ -132,7 +131,11 @@ class NavBar extends React.Component {
               >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                  <Alert variant="danger">{loginStatus}</Alert>
+                  {loginStatus == "" ? (
+                    <div></div>
+                  ) : (
+                    <Alert variant="danger">{loginStatus}</Alert>
+                  )}
                   <Form onSubmit={this.login}>
                     <Form.Group controlId="formBasicUser">
                       <Form.Label>User Name</Form.Label>
@@ -176,18 +179,8 @@ class NavBar extends React.Component {
               >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                  <Alert variant="danger">{registerStatus}</Alert>
+                  {registerStatus == ""?(<div></div>):(<Alert variant="danger">{registerStatus}</Alert>)}
                   <Form onSubmit={this.register}>
-                    <Form.Group controlId="formBasicText">
-                      <Form.Label>Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="name"
-                        onChange={this.handleChange}
-                        placeholder="Enter name"
-                        required
-                      />
-                    </Form.Group>
                     <Form.Group controlId="formBasicUserName">
                       <Form.Label>User Name</Form.Label>
                       <Form.Control

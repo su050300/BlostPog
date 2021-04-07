@@ -6,12 +6,13 @@ var bodyParser = require("body-parser");
 var session = require("express-session");
 var logger = require("morgan");
 var cors = require("cors");
-
+require('dotenv').config();
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 var registerRouter = require("./routes/register");
 var loginRouter = require("./routes/login");
 var logoutRouter = require("./routes/logout");
+var emailVerifyRouter = require("./routes/emailVerify");
+
 
 var app = express();
 
@@ -47,10 +48,10 @@ app.use(
 );
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
 app.use("/login", loginRouter);
 app.use("/register", registerRouter);
 app.use("/logout",logoutRouter);
+app.use("/confirmation/:token",emailVerifyRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

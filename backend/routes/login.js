@@ -1,40 +1,58 @@
 var express = require("express");
 var router = express.Router();
-var conn = require("./db.js");
 var bcrypt = require("bcrypt");
+const User = require("../models/User");
 
 router.get("/", function (req, res) {
   if (req.session.username) {
-    res.send({ loggedIn: true, username: req.session.username });
+    res.send({
+      loggedIn: true,
+      username: req.session.username
+    });
   } else {
-    res.send({ loggedIn: false });
+    res.send({
+      loggedIn: false
+    });
   }
 });
 
 router.post("/", function (req, res, next) {
   const username = req.body.user["username"];
   const password = req.body.user["password"];
-  conn.query(
-    "SELECT * from User WHERE username = ?",
-    [username],
-    function (err, rows, fields) {
-      if (err) throw err;
-      if (rows.length > 0) {
-        const check = bcrypt.compareSync(password, rows[0]["password"]);
-        if (check) {
+  User.findOne({
+    where: {
+      username: username,
+    }
+  }).then((user) => {
+    if (!user) {
+      res.json({
+        message: "username do not exist",
+        loggedIn: false
+      });
+    } else {
+      if (user.isVeified == false) {
+        res.json({
+          message: "Verify your email then try login",
+          loggedIn: false
+        });
+      } else {
+        var dbpass = bcrypt.compareSync(password, user.password);
+        if (dbpass) {
           req.session.username = username;
-          req.session.userid = rows[0]["id"];
-          res.send({ message: "login successfully", loggedIn: true });
+          req.session.userid = user.id;
+          res.json({
+            loggedIn: true
+          });
         } else {
-          res.send({
+          res.json({
             message: "username and password do not match",
-            loggedIn: true,
+            loggedIn: false,
           });
         }
-      } else {
-        res.send({ message: "username do not exist", loggedIn: true });
       }
     }
-  );
+  }).catch(err => {
+    throw err;
+  })
 });
 module.exports = router;

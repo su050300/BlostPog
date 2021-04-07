@@ -1,49 +1,85 @@
-var express = require("express");
-var router = express.Router();
-var conn = require("./db.js");
-var bcrypt = require("bcrypt");
+const express = require("express");
+const router = express.Router();
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
-router.post("/", function (req, res) {
-  const name = req.body.user["name"];
+const nodemailer = require("nodemailer");
+
+var transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  port: process.env.EMAIL_PORT,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+var message = {
+  from: process.env.EMAIL_USERNAME,
+  subject: "Verify your mail",
+  text: "verify your mail to login",
+};
+router.post("/", async function (req, res) {
   const username = req.body.user["username"];
   const email = req.body.user["email"];
   const password = req.body.user["password"];
-  conn.query(
-    "SELECT * from User WHERE username = ?",
-    [username],
-    function (err, rows, fields) {
-      if (err) {
-        throw err;
-      }
-      if (rows.length > 0) {
-        res.send({ message: "username exists", registered: false });
-      } else {
-        conn.query(
-          "SELECT * from User where email = ?",
-          [email],
-          function (err, rows, fields) {
-            if (rows.length > 0) {
-              res.send({ message: "email exists", registered: false });
-            } else {
-              var pass = saltHashPassword(password);
-              conn.query(
-                "INSERT into User (username,name,email,password) VALUES (?,?,?,?)",
-                [username, name, email, pass],
-                function (err, rows, fields) {
-                  if (err) throw err;
-                  res.send({
-                    message: "registered successfully",
-                    registered: true,
-                  });
-                }
-              );
-            }
-          }
-        );
-      }
+  const isVerified = false;
+  var user = await User.findOne({
+    where: {
+      username: username
     }
-  );
+  });
+  if (user) {
+    res.json({
+      message: "username exists",
+      registered: false
+    });
+  } else {
+    user = await User.findOne({
+      where: {
+        email: email
+      },
+    });
+    if (user) {
+      res.json({
+        message: "email exists",
+        registered: false
+      });
+    } else {
+      var pass = saltHashPassword(password);
+      user = await User.create({
+        username: username,
+        email: email,
+        password: pass,
+        isVerified: isVerified,
+      });
+      res.json({
+        message: "mail sended successfully",
+        registered: true,
+      });
+      const userId = user.id;
+      message.to = user.email;
+      jwt.sign({
+          userId: userId,
+        },
+        process.env.EMAIL_SECRET, {
+          expiresIn: '1d',
+        },
+        (err, emailToken) => {
+          var url = `http://localhost:9000/confirmation/${emailToken}`;
+          message.html = `Click this url to confirm your email id:<a href="${url}">${url}</a>`;
+          transporter.sendMail(message, (err, info) => {
+            if (err) {
+              console.log("Error occurred. " + err.message);
+            }
+          });
+        }
+      )
+    }
+  }
 });
+
 function saltHashPassword(password) {
   var saltRounds = 10; //the cost of processing the data
   var salt = bcrypt.genSaltSync(saltRounds); //generate  a dynamic salt

@@ -1,15 +1,6 @@
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '',
-  database : 'BolstPog'
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: 'mysql',
 });
- 
-//display connected and ensure proper connection has been setup
-connection.connect(function(err) {
-  if (err) throw err
-  console.log('You are now connected...')
-});
-
-module.exports = connection;
+module.exports = sequelize;

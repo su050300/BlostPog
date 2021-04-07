@@ -7,11 +7,11 @@
 var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
+var cors = require("cors");
 
 /**
  * Get port from environment and store in Express.
  */
-
 var port = normalizePort(process.env.PORT || '9000');
 app.set('port', port);
 
