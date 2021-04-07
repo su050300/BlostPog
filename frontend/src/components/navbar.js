@@ -3,6 +3,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/navbar.css";
 import Axios from "axios";
+import ForgetPassword from "./forgetPassword";
 import { Button, Navbar, Nav, Form, Modal, Alert } from "react-bootstrap";
 import { Redirect, withRouter } from "react-router-dom";
 class NavBar extends React.Component {
@@ -24,6 +25,7 @@ class NavBar extends React.Component {
       isLogin: false,
       loginStatus: "",
       registerStatus: "",
+      forgotOrlogin: false,
     };
   }
   componentWillMount() {
@@ -136,7 +138,7 @@ class NavBar extends React.Component {
                   ) : (
                     <Alert variant="danger">{loginStatus}</Alert>
                   )}
-                  <Form onSubmit={this.login}>
+                  {this.state.forgotOrlogin == false?(<Form onSubmit={this.login}>
                     <Form.Group controlId="formBasicUser">
                       <Form.Label>User Name</Form.Label>
                       <Form.Control
@@ -161,13 +163,18 @@ class NavBar extends React.Component {
                     <Button variant="primary" type="submit">
                       Login
                     </Button>
-                  </Form>
+                  </Form>):(<ForgetPassword />)}
                 </Modal.Body>
                 <Modal.Footer>
                   Not a memeber ?
                   <Nav.Link onClick={() => this.signupModalShow()}>
                     Signup
                   </Nav.Link>
+                  {this.state.forgotOrlogin == false?(<Nav.Link onClick={() => this.setState({forgotOrlogin:true})}>
+                    forgot password
+                  </Nav.Link>):(<Nav.Link onClick={() => this.setState({forgotOrlogin:false})}>
+                    login
+                  </Nav.Link>)}
                 </Modal.Footer>
               </Modal>
               <Modal

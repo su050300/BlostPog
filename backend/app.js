@@ -12,7 +12,9 @@ var registerRouter = require("./routes/register");
 var loginRouter = require("./routes/login");
 var logoutRouter = require("./routes/logout");
 var emailVerifyRouter = require("./routes/emailVerify");
-
+var resetPassRouter = require("./routes/resetpass");
+var forgetPassRouter = require("./routes/forgetpass");
+var changePassRouter = require("./routes/resetpass");
 
 var app = express();
 
@@ -51,7 +53,10 @@ app.use("/", indexRouter);
 app.use("/login", loginRouter);
 app.use("/register", registerRouter);
 app.use("/logout",logoutRouter);
-app.use("/confirmation/:token",emailVerifyRouter);
+app.use("/verify/:token",emailVerifyRouter);
+app.use("/reset/:token",resetPassRouter);
+app.use("/reset",forgetPassRouter);
+app.use("/changepass",changePassRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

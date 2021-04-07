@@ -1,14 +1,14 @@
 var express = require("express");
-var router = express.Router();
-var jwt = require('jsonwebtoken');
+const router = express.Router();
+const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 
 router.get("/", async function (req, res) {
     var token = req.baseUrl.split("/");
     token = token[2];
     var result = jwt.verify(token, process.env.EMAIL_SECRET);
-    userId = result.userId;
-    User.update({
+    const userId = result.userId;
+    await User.update({
         isVerified: true
     }, {
         where: {

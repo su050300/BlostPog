@@ -1,6 +1,6 @@
-var express = require("express");
-var router = express.Router();
-var bcrypt = require("bcrypt");
+const express = require("express");
+const router = express.Router();
+const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
 router.get("/", function (req, res) {
@@ -16,7 +16,7 @@ router.get("/", function (req, res) {
   }
 });
 
-router.post("/", function (req, res, next) {
+router.post("/", async function (req, res, next) {
   const username = req.body.user["username"];
   const password = req.body.user["password"];
   var user = await User.findOne({

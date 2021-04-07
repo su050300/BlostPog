@@ -67,7 +67,7 @@ router.post("/", async function (req, res) {
           expiresIn: '1d',
         },
         (err, emailToken) => {
-          var url = `http://localhost:9000/confirmation/${emailToken}`;
+          var url = `http://localhost:9000/verify/${emailToken}`;
           message.html = `Click this url to confirm your email id:<a href="${url}">${url}</a>`;
           transporter.sendMail(message, (err, info) => {
             if (err) {
