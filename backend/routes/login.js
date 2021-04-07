@@ -19,40 +19,37 @@ router.get("/", function (req, res) {
 router.post("/", function (req, res, next) {
   const username = req.body.user["username"];
   const password = req.body.user["password"];
-  User.findOne({
+  var user = await User.findOne({
     where: {
       username: username,
     }
-  }).then((user) => {
-    if (!user) {
+  });
+  if (user) {
+    if (user.isVeified == false) {
       res.json({
-        message: "username do not exist",
+        message: "Verify your email then try login",
         loggedIn: false
       });
     } else {
-      if (user.isVeified == false) {
+      var dbpass = bcrypt.compareSync(password, user.password);
+      if (dbpass) {
+        req.session.username = username;
+        req.session.userid = user.id;
         res.json({
-          message: "Verify your email then try login",
-          loggedIn: false
+          loggedIn: true
         });
       } else {
-        var dbpass = bcrypt.compareSync(password, user.password);
-        if (dbpass) {
-          req.session.username = username;
-          req.session.userid = user.id;
-          res.json({
-            loggedIn: true
-          });
-        } else {
-          res.json({
-            message: "username and password do not match",
-            loggedIn: false,
-          });
-        }
+        res.json({
+          message: "username and password do not match",
+          loggedIn: false,
+        });
       }
     }
-  }).catch(err => {
-    throw err;
-  })
+  } else {
+    res.json({
+      message: "username do not exist",
+      loggedIn: false
+    });
+  }
 });
 module.exports = router;
