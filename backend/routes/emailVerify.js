@@ -2,6 +2,7 @@ var express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require("../models/User");
+const Profile = require("../models/Profile");
 
 router.get("/", async function (req, res) {
     var token = req.baseUrl.split("/");
@@ -15,6 +16,9 @@ router.get("/", async function (req, res) {
             id: userId
         }
     });
+    await Profile.create({
+        userId:userId,
+    })
     res.redirect('http://localhost:3000');
 })
 module.exports = router;
