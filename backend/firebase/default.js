@@ -1,13 +1,13 @@
 var firebase = require("firebase");
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAfOGXWXGEmN6Salno5lLmErO4m5EjfUZA",
-  authDomain: "blostpog.firebaseapp.com",
-  projectId: "blostpog",
-  storageBucket: "blostpog.appspot.com",
-  messagingSenderId: "637025684662",
-  appId: "1:637025684662:web:d6f8eba050709412f4ea17",
-  measurementId: "G-1L0VDM00WV",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID,
 };
 
 firebase.initializeApp(firebaseConfig);

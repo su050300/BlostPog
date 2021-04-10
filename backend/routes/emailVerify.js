@@ -18,6 +18,7 @@ router.get("/", async function (req, res) {
     });
     await Profile.create({
         userId:userId,
+        avatar:'https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20',
     })
     res.redirect('http://localhost:3000');
 })

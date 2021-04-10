@@ -1,10 +1,19 @@
-/* eslint-disable */
+// /* eslint-disable */
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/navbar.css";
 import Axios from "axios";
 import ForgetPassword from "./forgetPassword";
-import { Button, Navbar, Nav, Form, Modal, Alert } from "react-bootstrap";
+import {
+  Button,
+  Navbar,
+  Nav,
+  Form,
+  Modal,
+  Alert,
+  Container,
+  NavDropdown,
+} from "react-bootstrap";
 import { Redirect, withRouter } from "react-router-dom";
 class NavBar extends React.Component {
   constructor(props) {
@@ -76,7 +85,7 @@ class NavBar extends React.Component {
       if (response.data.loggedIn == true) {
         this.props.history.push("/login");
         this.props.history.push("/");
-      } 
+      }
     });
   };
   logout = () => {
@@ -113,13 +122,25 @@ class NavBar extends React.Component {
     var registerStatus = this.state.registerStatus;
     var loginStatus = this.state.loginStatus;
     return (
-      <div>
-        <Navbar bg="dark" variant="dark" sticky="top">
-          <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+      <div className="encloser">
+        <Navbar className="defcolor" bg="none" variant="dark" sticky="top">
+          <Navbar.Brand href="#home">BlogPost</Navbar.Brand>
 
           {isLogin == true ? (
             <Nav className="ml-auto">
-              <Nav.Link onClick={() => this.logout()}>Logout</Nav.Link>
+              <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.2">
+                  Another action
+                </NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.3">
+                  Something
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={() => this.logout()}>
+                  Logout
+                </NavDropdown.Item>
+              </NavDropdown>
             </Nav>
           ) : (
             <Nav className="ml-auto">
@@ -138,43 +159,60 @@ class NavBar extends React.Component {
                   ) : (
                     <Alert variant="danger">{loginStatus}</Alert>
                   )}
-                  {this.state.forgotOrlogin == false?(<Form onSubmit={this.login}>
-                    <Form.Group controlId="formBasicUser">
-                      <Form.Label>User Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="username"
-                        onChange={this.handleLoginChange}
-                        placeholder="Enter username"
-                        required
-                      />
-                    </Form.Group>
+                  {this.state.forgotOrlogin == false ? (
+                    <Form onSubmit={this.login}>
+                      <Form.Group controlId="formBasicUser">
+                        <Form.Label>User Name</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="username"
+                          onChange={this.handleLoginChange}
+                          placeholder="Enter username"
+                          required
+                        />
+                      </Form.Group>
 
-                    <Form.Group controlId="formBasicPassword">
-                      <Form.Label>Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        name="password"
-                        onChange={this.handleLoginChange}
-                        placeholder="Password"
-                        required
-                      />
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                      Login
-                    </Button>
-                  </Form>):(<ForgetPassword />)}
+                      <Form.Group controlId="formBasicPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                          type="password"
+                          name="password"
+                          onChange={this.handleLoginChange}
+                          placeholder="Password"
+                          required
+                        />
+                      </Form.Group>
+                      <Button variant="primary" type="submit">
+                        Login
+                      </Button>
+                    </Form>
+                  ) : (
+                    <ForgetPassword />
+                  )}
                 </Modal.Body>
                 <Modal.Footer>
                   Not a memeber ?
-                  <Nav.Link onClick={() => this.signupModalShow()}>
+                  <Nav.Link
+                    className="text-info"
+                    onClick={() => this.signupModalShow()}
+                  >
                     Signup
                   </Nav.Link>
-                  {this.state.forgotOrlogin == false?(<Nav.Link onClick={() => this.setState({forgotOrlogin:true})}>
-                    forgot password
-                  </Nav.Link>):(<Nav.Link onClick={() => this.setState({forgotOrlogin:false})}>
-                    login
-                  </Nav.Link>)}
+                  {this.state.forgotOrlogin == false ? (
+                    <Nav.Link
+                      className="text-info"
+                      onClick={() => this.setState({ forgotOrlogin: true })}
+                    >
+                      forgot password
+                    </Nav.Link>
+                  ) : (
+                    <Nav.Link
+                      className="text-info"
+                      onClick={() => this.setState({ forgotOrlogin: false })}
+                    >
+                      login
+                    </Nav.Link>
+                  )}
                 </Modal.Footer>
               </Modal>
               <Modal
@@ -186,7 +224,11 @@ class NavBar extends React.Component {
               >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                  {registerStatus == ""?(<div></div>):(<Alert variant="danger">{registerStatus}</Alert>)}
+                  {registerStatus == "" ? (
+                    <div></div>
+                  ) : (
+                    <Alert variant="danger">{registerStatus}</Alert>
+                  )}
                   <Form onSubmit={this.register}>
                     <Form.Group controlId="formBasicUserName">
                       <Form.Label>User Name</Form.Label>
@@ -226,7 +268,10 @@ class NavBar extends React.Component {
                 </Modal.Body>
                 <Modal.Footer>
                   Already a memeber ?
-                  <Nav.Link onClick={() => this.loginModalShow()}>
+                  <Nav.Link
+                    className="text-info"
+                    onClick={() => this.loginModalShow()}
+                  >
                     Login
                   </Nav.Link>
                 </Modal.Footer>
