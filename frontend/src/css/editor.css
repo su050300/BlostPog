@@ -1,10 +1,17 @@
-.ce-toolbar__plus,.editor{
+.ce-toolbar__plus,.edit{
     color:white !important;
 }
 
-.editor{
+.cdx-block{
+    background:#203864 !important;
+}
+
+.edit{
     margin:4% 30% 0% 30%;
 }
+/* .codex-editor--empty{
+    display: none !important;
+} */
 
 .card{
     background:#203864 !important;
