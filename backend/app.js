@@ -15,6 +15,7 @@ var emailVerifyRouter = require("./routes/emailVerify");
 var resetPassRouter = require("./routes/resetpass");
 var forgetPassRouter = require("./routes/forgetpass");
 var changePassRouter = require("./routes/resetpass");
+var profileRouter = require("./routes/profile");
 
 var app = express();
 
@@ -43,7 +44,7 @@ app.use(
     saveUninitialized: false,
     secret: 'secret',
     cookie: {
-      maxAge: 24 * 60 * 60,
+      maxAge: 200000000,
       sameSite: true,
     },
   })
@@ -57,6 +58,7 @@ app.use("/verify/:token",emailVerifyRouter);
 app.use("/reset/:token",resetPassRouter);
 app.use("/reset",forgetPassRouter);
 app.use("/changepass",changePassRouter);
+app.use('/profile',profileRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

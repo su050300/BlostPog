@@ -1,27 +1,13 @@
 var Sequelize = require("sequelize");
 var sequelize = require("../routes/db.js");
-var Profile = sequelize.define(
-  "Profile",
+var Follower = sequelize.define(
+  "Follower",
   {
-    id: {
+    followerId: {
       type: Sequelize.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: 10,
     },
-    first_name: {
-      type: Sequelize.STRING,
-    },
-    last_name: {
-      type: Sequelize.STRING,
-    },
-    bio: {
-      type: Sequelize.STRING,
-    },
-    avatar: {
-      type: Sequelize.STRING,
-    },
-    userId: {
+    followingId: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
@@ -37,9 +23,16 @@ var Profile = sequelize.define(
   {
     classMethods: {
       associate: function (models) {
-        Profile.belongsTo(models.User, {
-          as: "user",
-          foreignKey: "userId",
+        Profile.belongsTo(models.Profile, {
+          as: "follower",
+          foreignKey: "followerId",
+          foreignKeyConstraint: true,
+        });
+      },
+      associate: function (models) {
+        Profile.belongsTo(models.Profile, {
+          as: "following",
+          foreignKey: "followingId",
           foreignKeyConstraint: true,
         });
       },
@@ -50,4 +43,4 @@ var Profile = sequelize.define(
   }
 );
 
-module.exports = Profile;
+module.exports = Follower;

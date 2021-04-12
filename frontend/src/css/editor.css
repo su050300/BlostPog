@@ -1,0 +1,12 @@
+.ce-toolbar__plus,.editor{
+    color:white !important;
+}
+
+.editor{
+    margin:4% 30% 0% 30%;
+}
+
+.card{
+    background:#203864 !important;
+    box-shadow: 0 8px 20px 0 rgba(32, 56, 100, .6);
+}

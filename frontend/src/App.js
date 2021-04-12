@@ -4,6 +4,8 @@ import home from "./components/home";
 import register from "./components/register";
 import forgetPassword from "./components/forgetPassword";
 import resetPassword from "./components/resetPassword";
+import profile from "./components/profile";
+import editor from "./components/editor";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 
 class App extends Component {
@@ -16,6 +18,8 @@ class App extends Component {
             <Route exact path="/register" component={register} />
             <Route exact path="/forgetpassword" component={forgetPassword} />
             <Route exact path="/resetpass/:id" component={resetPassword} />
+            <Route exact path="/profile" component={profile} />
+            <Route exact path="/editor" component={editor} />
           </Switch>
         </BrowserRouter>
       </div>
