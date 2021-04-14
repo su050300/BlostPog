@@ -24,7 +24,7 @@ import Marker from "@editorjs/marker";
 import NavBar from "./navbar";
 function Editor() {
   Axios.defaults.withCredentials = true;
-  const editor = new EditorJS({
+  var editor = new EditorJS({
     holder: "editorjs",
     autofocus: true,
     tools: {
@@ -57,7 +57,7 @@ function Editor() {
         inlineToolbar: true,
       },
       underline: {
-        class:Underline,
+        class: Underline,
         inlineToolbar: true,
       },
       personality: {
@@ -72,9 +72,9 @@ function Editor() {
         class: Paragraph,
         inlineToolbar: true,
       },
-      inline:{
-          class:Inline,
-          inlineToolbar:true,
+      inline: {
+        class: Inline,
+        inlineToolbar: true,
       },
       table: {
         class: Table,
@@ -129,6 +129,13 @@ function Editor() {
       console.log(api);
     },
   });
+  var submit = () => {
+    editor.save().then((outputData) => {
+        console.log('Article data: ', outputData)
+      }).catch((error) => {
+        console.log('Saving failed: ', error)
+      });
+  };
   return (
     <div>
       <NavBar />
@@ -140,6 +147,11 @@ function Editor() {
           <Card.Body>
             <div id="editorjs"></div>
           </Card.Body>
+          <Card.Footer className="text-center">
+            <Button variant="info" onClick={submit}>
+              Submit
+            </Button>
+          </Card.Footer>
         </Card>
       </div>
     </div>

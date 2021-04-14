@@ -39,6 +39,9 @@ class Profile extends React.Component {
         this.props.history.push("/");
       }
     });
+    Axios.get("http://localhost:9000/profile").then((res) => {
+      console.log(res.data.profile);
+    });
   }
   
   render() {
@@ -47,14 +50,7 @@ class Profile extends React.Component {
         <NavBar />
         <Container>
           <Row>
-            <Col>
-              <img src={this.state.profile.avatar}></img>
-            </Col>
-            <Col>
-              <Row>
-                <p>Bio{this.state.profile.bio}</p>
-              </Row>
-            </Col>
+            
           </Row>
         </Container>
       </div>

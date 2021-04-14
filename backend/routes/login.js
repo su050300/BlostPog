@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const User = require("../models/User");
+const {User} = require("../models");
 
 router.get("/", function (req, res) {
   if (req.session.username) {
@@ -19,37 +19,42 @@ router.get("/", function (req, res) {
 router.post("/", async function (req, res, next) {
   const username = req.body.user["username"];
   const password = req.body.user["password"];
-  var user = await User.findOne({
-    where: {
-      username: username,
-    }
-  });
-  if (user) {
-    if (user.isVeified == false) {
-      res.json({
-        message: "Verify your email then try login",
-        loggedIn: false
-      });
-    } else {
-      var dbpass = bcrypt.compareSync(password, user.password);
-      if (dbpass) {
-        req.session.username = username;
-        req.session.userid = user.id;
+  try{
+    var user = await User.findOne({
+      where: {
+        username: username,
+      }
+    });
+    if (user) {
+      if (user.isVerified == false) {
         res.json({
-          loggedIn: true
+          message: "Verify your email then try login",
+          loggedIn: false
         });
       } else {
-        res.json({
-          message: "username and password do not match",
-          loggedIn: false,
-        });
+        var dbpass = bcrypt.compareSync(password, user.password);
+        if (dbpass) {
+          req.session.username = username;
+          req.session.userid = user.id;
+          res.json({
+            loggedIn: true
+          });
+        } else {
+          res.json({
+            message: "username and password do not match",
+            loggedIn: false,
+          });
+        }
       }
+    } else {
+      res.json({
+        message: "username do not exist",
+        loggedIn: false
+      });
     }
-  } else {
-    res.json({
-      message: "username do not exist",
-      loggedIn: false
-    });
+  }
+  catch(err){
+    console.log(err);
   }
 });
 module.exports = router;

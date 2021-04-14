@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const {User} = require("../models");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const nodemailer = require("nodemailer");
 
@@ -25,58 +25,72 @@ router.post("/", async function (req, res) {
   const email = req.body.user["email"];
   const password = req.body.user["password"];
   const isVerified = false;
-  var user = await User.findOne({
-    where: {
-      username: username
-    }
-  });
-  if (user) {
-    res.json({
-      message: "username exists",
-      registered: false
-    });
-  } else {
-    user = await User.findOne({
+  try {
+    var user = await User.findOne({
       where: {
-        email: email
+        username: username,
       },
     });
     if (user) {
       res.json({
-        message: "email exists",
-        registered: false
+        message: "username exists",
+        registered: false,
       });
     } else {
-      var pass = saltHashPassword(password);
-      user = await User.create({
-        username: username,
-        email: email,
-        password: pass,
-        isVerified: isVerified,
-      });
-      res.json({
-        message: "mail sended successfully",
-        registered: true,
-      });
-      const userId = user.id;
-      message.to = user.email;
-      jwt.sign({
-          userId: userId,
-        },
-        process.env.EMAIL_SECRET, {
-          expiresIn: '1d',
-        },
-        (err, emailToken) => {
-          var url = `http://localhost:9000/verify/${emailToken}`;
-          message.html = `Click this url to confirm your email id:<a href="${url}">${url}</a>`;
-          transporter.sendMail(message, (err, info) => {
-            if (err) {
-              console.log("Error occurred. " + err.message);
-            }
+      try {
+        user = await User.findOne({
+          where: {
+            email: email,
+          },
+        });
+        if (user) {
+          res.json({
+            message: "email exists",
+            registered: false,
           });
+        } else {
+          var pass = saltHashPassword(password);
+          try {
+            user = await User.create({
+              username: username,
+              email: email,
+              password: pass,
+              isVerified: isVerified,
+            });
+            res.json({
+              message: "mail sended successfully",
+              registered: true,
+            });
+            const userId = user.id;
+            message.to = user.email;
+            jwt.sign(
+              {
+                userId: userId,
+              },
+              process.env.EMAIL_SECRET,
+              {
+                expiresIn: "1d",
+              },
+              (err, emailToken) => {
+                var url = `http://localhost:9000/verify/${emailToken}`;
+                message.html = `Click this url to confirm your email id:<a href="${url}">${url}</a>`;
+                transporter.sendMail(message, (err, info) => {
+                  if (err) {
+                    console.log("Error occurred. " + err.message);
+                  }
+                });
+              }
+            );
+          } catch (err) {
+            console.log(err);
+          }
         }
-      )
+      } catch (err) {
+        console.log(err);
+      }
     }
+  } catch (err) {
+    console.log(err);
   }
 });
 

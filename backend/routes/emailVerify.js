@@ -1,8 +1,8 @@
 var express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const User = require("../models/User");
-const Profile = require("../models/Profile");
+const {User} = require("../models");
+const {Profile} = require("../models");
 
 router.get("/", async function (req, res) {
     var token = req.baseUrl.split("/");

@@ -82,7 +82,13 @@ class NavBar extends React.Component {
       user: this.state.loginUser,
     }).then((response) => {
       this.setState({ loginStatus: response.data.message });
-      if (response.data.loggedIn == true) {
+      console.log(response.data.loggedIn);
+      if (response.data.loggedIn == false) {
+        setTimeout(() => {
+          this.props.history.push("/login");
+          this.props.history.push("/");
+        }, 2000);
+      } else {
         this.props.history.push("/login");
         this.props.history.push("/");
       }
