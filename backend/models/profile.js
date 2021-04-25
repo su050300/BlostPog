@@ -13,13 +13,21 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         foreignKeyConstraint: true,
       });
-      this.belongsToMany(models.Profile,{
-        as:'follower',
-        sourceKey:'followerId',
-        targetKey:'followingId',
-        foreignKeyConstraint:true,
-        through:models.Follower,
-      })
+      this.hasMany(models.blogs, {
+        as: "blogs",
+        foreignKey: "authorId",
+        foreignKeyConstraint: true,
+      });
+      // this.hasMany(models.Follower, {
+      //   as: "followers",
+      //   foreignKey: "followingId",
+      //   foreignKeyConstraint: true,
+      // });
+      // this.hasMany(models.Follower, {
+      //   as: "following",
+      //   foreignKey: "followerId",
+      //   foreignKeyConstraint: true,
+      // });
     }
     // toJSON(){
     //   return {...this.get(),id:undefined};

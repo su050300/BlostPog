@@ -2,6 +2,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/navbar.css";
+
 import Axios from "axios";
 import ForgetPassword from "./forgetPassword";
 import {
@@ -42,6 +43,7 @@ class NavBar extends React.Component {
       if (res.data.loggedIn == true) {
         this.setState({ isLogin: true });
       } else {
+        this.props.history.push('/');
         this.setState({ isLogin: false });
       }
     });
@@ -144,7 +146,8 @@ class NavBar extends React.Component {
                 }
               >
                 <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-                <NavDropdown.Item href="/editor">Editor</NavDropdown.Item>
+                <NavDropdown.Item href="/editor">Write Your Story</NavDropdown.Item>
+                <NavDropdown.Item href="/myblogs">My Blogs</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={() => this.logout()}>
                   Logout

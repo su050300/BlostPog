@@ -16,6 +16,11 @@ var resetPassRouter = require("./routes/resetpass");
 var forgetPassRouter = require("./routes/forgetpass");
 var changePassRouter = require("./routes/resetpass");
 var profileRouter = require("./routes/profile");
+var createBolgRouter = require("./routes/cblog");
+var ahomeRouter = require("./routes/ahome");
+var alogoutRouter = require("./routes/alogout");
+var aregisterRouter = require("./routes/aregister");
+var aloginRouter = require("./routes/alogin");
 var {sequelize} = require("./models");
 
 var app = express();
@@ -60,6 +65,13 @@ app.use("/reset/:token", resetPassRouter);
 app.use("/reset", forgetPassRouter);
 app.use("/changepass", changePassRouter);
 app.use("/profile", profileRouter);
+app.use("/save/blogs",createBolgRouter);
+
+
+app.use("/admin",ahomeRouter);
+app.use("/admin/register",aregisterRouter);
+app.use("/admin/login",aloginRouter);
+app.use("/admin/logout",alogoutRouter);
 async function init() {
   try {
     await sequelize.authenticate();

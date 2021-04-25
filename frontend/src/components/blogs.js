@@ -22,31 +22,25 @@ class Profile extends React.Component {
     super(props);
     Axios.defaults.withCredentials = true;
     this.state = {
-      profile: {
-        username: "",
-        email: "",
-        first_name: "",
-        last_name: "",
-        bio: "",
-        avatar: "",
-        followers: "",
-      },
+      blogs:'',
+      blog:'',
     };
   }
-  componentWillMount() {
-    this.fetchData();
+  async componentWillMount() {
+    await this.fetchData();
   }
   fetchData = () => {
-
+    Axios.get("http://localhost:9000/save/blogs").then((res) => {
+        this.setState({blogs:res.data.blogs});
+        console.log(res.data.blogs);
+      });
   }
   render() {
     return (
       <div>
         <NavBar />
         <Container>
-          <Row>
-            
-          </Row>
+          {this.state.blogs}
         </Container>
       </div>
     );

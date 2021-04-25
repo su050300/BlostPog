@@ -1,0 +1,32 @@
+
+
+HasOne => A.hasOne(B) => one to one relationship exists between A and B,with foreign key being defined in model B
+
+BelongsTo =>  A.belongsTo(B) => one to one relationship exists between A and B,with foreign key being defined in model A.
+
+HasMany => A.hasMany(B) => one to many relationship exists between A and B,foreign key in B.
+
+BelongsToMany => A.belongsToMany(B,{through:'C'}) => many to many relationship exists between A and B through table C which contains the ids from both table,sequelize prepares one if not present.
+
+
+uuid => universallly unique identifiers.
+
+
+lazy loading :-- load when required.
+
+eager loading :-- load all at once. 
+   use include:model name in the query 
+
+
+
+special methods added to instances.
+
+ ==> Belongs to
+ fooinstance.getBar(),fooinstance.setBar(),fooInstance.createBar(),
+
+ ==> hasMany
+ fooinstance.getBars(),fooInstance.countBars(),fooInstance.hasBar(),fooInstance.hasBars(),
+fooInstance.addBar(),fooinstance.addBars().
+once we use alias in association we can use methods like .getAlias_name() etc.
+
+
