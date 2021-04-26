@@ -16,6 +16,41 @@ router.get("/", function (req, res) {
   }
 });
 
+router.get("/allTag", async function (req, res) {
+  try {
+    var tags = await Tag.findAll();
+    var result = [];
+    tags.forEach(element => {
+      var obj = {};
+      obj[element.id] = element.tag;
+      result.push(obj);
+    });
+    res.json({
+      tags:result,
+    })
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+
+router.get("/allCategories", async function (req, res) {
+  try {
+    var categories = await Category.findAll();
+    var result = [];
+    categories.forEach(element => {
+      var obj = {};
+      obj[element.id] = element.tag;
+      result.push(obj);
+    });
+    res.json({
+      categories:result,
+    })
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 router.post("/addTag", async function (req, res) {
   var tag_word = req.body.tag;
   try {

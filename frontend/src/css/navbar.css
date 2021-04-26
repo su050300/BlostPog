@@ -5,7 +5,7 @@ body {
 .defcolor {
     background: #203864 !important;
     padding: 0.7% 7%;
-    box-shadow: 0 8px 20px 0 rgba(32, 56, 100, .6);
+    box-shadow: 0 8px 20px 0 rgba(9, 29, 66, 0.6);
 }
 
 .encloser {
@@ -60,6 +60,15 @@ a {
     border: 1px solid #0d3e65 !important;
 }
 
+.row{
+    margin-right: 0px !important; 
+    margin-left: 0px !important;
+}
+
+.col-2,.col-8{
+    padding-right: 0px; 
+    padding-left: 0px;
+}
 
 @media (min-width: 992px) {
 

@@ -15,6 +15,9 @@ import {
   Col,
   NavDropdown,
   Card,
+  Tab,
+  ListGroup,
+  Table,
 } from "react-bootstrap";
 import { Redirect, withRouter } from "react-router-dom";
 class Admin extends React.Component {
@@ -41,12 +44,16 @@ class Admin extends React.Component {
       tagSuccess: false,
       categoryStatus: "",
       categorySuccess: false,
+      allTags: "",
+      allCategorie: "",
     };
   }
   componentWillMount() {
     Axios.get("http://localhost:9000/admin/login").then((res) => {
       if (res.data.loggedIn == true) {
         this.setState({ isadminLogin: true });
+        this.getTags();
+        this.getCategories();
       } else {
         this.props.history.push("/admin");
         this.setState({ isadminLogin: false });
@@ -143,6 +150,18 @@ class Admin extends React.Component {
           });
         }, 4000);
       }
+    });
+  };
+
+  getTags = (event) => {
+    Axios.get("http://localhost:9000/admin/allTag").then((res) => {
+      this.setState({ allTags: res.data.tags });
+    });
+  };
+
+  getCategories = (event) => {
+    Axios.get("http://localhost:9000/admin/allCategories").then((res) => {
+      this.setState({ allCategories: res.data.categories });
     });
   };
 
@@ -313,96 +332,139 @@ class Admin extends React.Component {
             </Nav>
           )}
         </Navbar>
-        <Container className="whtr">
-          {isadminLogin == true ? (
-            <div className="main">
-              <Row>
-                <Col>
-                  <Card>
-                    <Card.Header className="text-center">
-                      Add categories
-                      {categorySuccess == true ? (
-                        <Alert variant="success">{categoryStatus}</Alert>
-                      ) : (
-                        <div style={{ display: "none" }}></div>
-                      )}
-                      {categorySuccess == false && categoryStatus != "" ? (
-                        <Alert variant="danger">{categoryStatus}</Alert>
-                      ) : (
-                        <div style={{ display: "none" }}></div>
-                      )}
-                    </Card.Header>
-                    <Card.Body>
-                      <Form onSubmit={this.addCategory}>
-                        <Form.Group>
-                          <Form.Label className="my-2">Category</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="category"
-                            placeholder="Enter category"
-                            id="category"
-                            required
-                          />
-                        </Form.Group>
-                        <Button
-                          className="mt-2"
-                          variant="info"
-                          size="md"
-                          type="submit"
-                          block
-                        >
-                          Add
-                        </Button>
-                      </Form>
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col>
-                  <Card>
-                    <Card.Header className="text-center">
-                      Add tags
-                      {tagSuccess == true ? (
-                        <Alert variant="success">{tagStatus}</Alert>
-                      ) : (
-                        <div style={{ display: "none" }}></div>
-                      )}
-                      {tagSuccess == false && tagStatus != "" ? (
-                        <Alert variant="danger">{tagStatus}</Alert>
-                      ) : (
-                        <div style={{ display: "none" }}></div>
-                      )}
-                    </Card.Header>
-                    <Card.Body>
-                      <Form onSubmit={this.addTag}>
-                        <Form.Group>
-                          <Form.Label className="my-2">Tag</Form.Label>
-                          <Form.Control
-                            type="text"
-                            name="tag"
-                            placeholder="Enter tag"
-                            id="tag"
-                            required
-                          />
-                        </Form.Group>
-                        <Button
-                          className="mt-2"
-                          variant="info"
-                          size="md"
-                          type="submit"
-                          block
-                        >
-                          Add
-                        </Button>
-                      </Form>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </div>
-          ) : (
-            <h4>this is admin home</h4>
-          )}
-        </Container>
+        {isadminLogin == true ? (
+          <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
+            <Row>
+              <Col xs={2}>
+                <ListGroup>
+                  <ListGroup.Item action href="#link1">
+                    Add Category
+                  </ListGroup.Item>
+                  <ListGroup.Item action href="#link2">
+                    Add Tag
+                  </ListGroup.Item>
+                  <hr width="100%" className="my-3" color="white"></hr>
+                  <ListGroup.Item action href="#link3">
+                    All Tags
+                  </ListGroup.Item>
+                  <ListGroup.Item action href="#link4">
+                    All Categories
+                  </ListGroup.Item>
+                </ListGroup>
+              </Col>
+              <Col xs={10}>
+                <Tab.Content className="tab-margin">
+                  <Tab.Pane eventKey="#link1">
+                    <Card>
+                      <Card.Header className="text-center">
+                        Add categories
+                        {categorySuccess == true ? (
+                          <Alert variant="success">{categoryStatus}</Alert>
+                        ) : (
+                          <div style={{ display: "none" }}></div>
+                        )}
+                        {categorySuccess == false && categoryStatus != "" ? (
+                          <Alert variant="danger">{categoryStatus}</Alert>
+                        ) : (
+                          <div style={{ display: "none" }}></div>
+                        )}
+                      </Card.Header>
+                      <Card.Body>
+                        <Form onSubmit={this.addCategory}>
+                          <Form.Group>
+                            <Form.Label className="my-2">Category</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="category"
+                              placeholder="Enter category"
+                              id="category"
+                              required
+                            />
+                          </Form.Group>
+                          <Button
+                            className="mt-2"
+                            variant="info"
+                            size="md"
+                            type="submit"
+                            block
+                          >
+                            Add
+                          </Button>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="#link2">
+                    <Card>
+                      <Card.Header className="text-center">
+                        Add tags
+                        {tagSuccess == true ? (
+                          <Alert variant="success">{tagStatus}</Alert>
+                        ) : (
+                          <div style={{ display: "none" }}></div>
+                        )}
+                        {tagSuccess == false && tagStatus != "" ? (
+                          <Alert variant="danger">{tagStatus}</Alert>
+                        ) : (
+                          <div style={{ display: "none" }}></div>
+                        )}
+                      </Card.Header>
+                      <Card.Body>
+                        <Form onSubmit={this.addTag}>
+                          <Form.Group>
+                            <Form.Label className="my-2">Tag</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="tag"
+                              placeholder="Enter tag"
+                              id="tag"
+                              required
+                            />
+                          </Form.Group>
+                          <Button
+                            className="mt-2"
+                            variant="info"
+                            size="md"
+                            type="submit"
+                            block
+                          >
+                            Add
+                          </Button>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="#link3">
+                    <Card>
+                      <Card.Header className="text-center">
+                        All tags
+                      </Card.Header>
+                      <Card.Body>
+                        <Table striped bordered hover variant="dark">
+                          <tbody id="all-tags"></tbody>
+                        </Table>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="#link4">
+                    <Card>
+                      <Card.Header className="text-center">
+                        All Categories
+                      </Card.Header>
+                      <Card.Body>
+                        <Table striped bordered hover variant="dark">
+                          <tbody id="all-categories"></tbody>
+                        </Table>
+                      </Card.Body>
+                    </Card>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Col>
+            </Row>
+          </Tab.Container>
+        ) : (
+          <h1>message if not login</h1>
+        )}
       </div>
     );
   }
