@@ -1,4 +1,4 @@
-// /* eslint-disable */
+/* eslint-disable */
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../css/admin.css";
@@ -46,6 +46,10 @@ class Admin extends React.Component {
       categorySuccess: false,
       allTags: "",
       allCategorie: "",
+      showTags: [],
+      showCategories: [],
+      delTagStatus: "",
+      delCategoryStatus: "",
     };
   }
   componentWillMount() {
@@ -150,18 +154,7 @@ class Admin extends React.Component {
           });
         }, 4000);
       }
-    });
-  };
-
-  getTags = (event) => {
-    Axios.get("http://localhost:9000/admin/allTag").then((res) => {
-      this.setState({ allTags: res.data.tags });
-    });
-  };
-
-  getCategories = (event) => {
-    Axios.get("http://localhost:9000/admin/allCategories").then((res) => {
-      this.setState({ allCategories: res.data.categories });
+      this.getTags();
     });
   };
 
@@ -181,17 +174,121 @@ class Admin extends React.Component {
             categorySuccess: false,
           });
         }, 4000);
+        this.getCategories();
       }
     });
   };
+
+  getTags = (event) => {
+    Axios.get("http://localhost:9000/admin/allTag").then((res) => {
+      this.setState({ allTags: res.data.tags });
+      this.showTags();
+    });
+  };
+
+  getCategories = (event) => {
+    Axios.get("http://localhost:9000/admin/allCategories").then((res) => {
+      this.setState({ allCategories: res.data.categories });
+      this.showCategories();
+    });
+  };
+
+  showTags = () => {
+    var length = this.state.allTags.length;
+    this.setState({ showTags: [] });
+    var table = this.state.showTags;
+    for (var i = 0; i < length; i++) {
+      var key = Object.keys(this.state.allTags[i])[0];
+      var value = this.state.allTags[i][key];
+      table.push(
+        <tr>
+          <td>{i + 1}</td>
+          <td>{value}</td>
+          <td>
+            <Button
+              size="sm"
+              onClick={(event) => this.deleteTag(event)}
+              id={key}
+              variant="info"
+              block
+            >
+              Delete
+            </Button>
+          </td>
+        </tr>
+      );
+    }
+    this.setState({ showTags: table });
+  };
+
+  showCategories = () => {
+    var length = this.state.allCategories.length;
+    this.setState({ showCategories: [] });
+    var table = this.state.showCategories;
+    for (var i = 0; i < length; i++) {
+      var key = Object.keys(this.state.allCategories[i])[0];
+      var value = this.state.allCategories[i][key];
+      table.push(
+        <tr>
+          <td>{i + 1}</td>
+          <td>{value}</td>
+          <td>
+            <Button
+              size="sm"
+              onClick={(event) => this.deleteCatgeory(event)}
+              variant="info"
+              id={key}
+              block
+            >
+              Delete
+            </Button>
+          </td>
+        </tr>
+      );
+    }
+    this.setState({ showCatgeories: table });
+  };
+
+  deleteTag = (event) => {
+    var tagId = event.target.id;
+    Axios.post("http://localhost:9000/admin/deleteTag", {
+      tagId: tagId,
+    }).then((response) => {
+      this.setState({ delTagStatus: response.data.message });
+      setTimeout(() => {
+        this.setState({
+          delTagStatus: "",
+        });
+      }, 4000);
+      this.getTags();
+    });
+  };
+
+  deleteCatgeory = (event) => {
+    var categoryId = event.target.id;
+    Axios.post("http://localhost:9000/admin/deleteCategory", {
+      categoryId: categoryId,
+    }).then((response) => {
+      this.setState({ delCategoryStatus: response.data.message });
+      // setTimeout(() => {
+      //   this.setState({
+      //     delCategoryStatus: "",
+      //   });
+      // }, 4000);
+      this.getCategories();
+    });
+  };
+
   render() {
-    var isadminLogin = this.state.isadminLogin;
-    var registerStatus = this.state.registerStatus;
-    var loginStatus = this.state.loginStatus;
+    const isadminLogin = this.state.isadminLogin;
+    const registerStatus = this.state.registerStatus;
+    const loginStatus = this.state.loginStatus;
     const tagStatus = this.state.tagStatus;
     const tagSuccess = this.state.tagSuccess;
     const categoryStatus = this.state.categoryStatus;
     const categorySuccess = this.state.categorySuccess;
+    const delTagStatus = this.state.delTagStatus;
+    const delCategoryStatus = this.state.delCategoryStatus;
     return (
       <div>
         <Navbar className="defcolor" bg="none" variant="dark" sticky="top">
@@ -435,25 +532,53 @@ class Admin extends React.Component {
                     </Card>
                   </Tab.Pane>
                   <Tab.Pane eventKey="#link3">
-                    <Card>
-                      <Card.Header className="text-center">
+                    <Card className="px-5 py-5">
+                      <Card.Header
+                        style={{ backgroundColor: "#0a1f44" }}
+                        className="text-center"
+                      >
                         All tags
+                        {delTagStatus == "" ? (
+                          <div></div>
+                        ) : (
+                          <Alert variant="success">{delTagStatus}</Alert>
+                        )}
                       </Card.Header>
                       <Card.Body>
-                        <Table striped bordered hover variant="dark">
-                          <tbody id="all-tags"></tbody>
+                        <Table
+                          className="text-center text-capitalize"
+                          striped
+                          bordered
+                          hover
+                          variant="dark"
+                        >
+                          <tbody>{this.state.showTags}</tbody>
                         </Table>
                       </Card.Body>
                     </Card>
                   </Tab.Pane>
                   <Tab.Pane eventKey="#link4">
-                    <Card>
-                      <Card.Header className="text-center">
+                    <Card className="px-5 py-5">
+                      <Card.Header
+                        style={{ backgroundColor: "#0a1f44" }}
+                        className="text-center"
+                      >
                         All Categories
+                        {delCategoryStatus == "" ? (
+                          <div></div>
+                        ) : (
+                          <Alert variant="success">{delCategoryStatus}</Alert>
+                        )}
                       </Card.Header>
                       <Card.Body>
-                        <Table striped bordered hover variant="dark">
-                          <tbody id="all-categories"></tbody>
+                        <Table
+                          className="text-center text-capitalize"
+                          striped
+                          bordered
+                          hover
+                          variant="dark"
+                        >
+                          <tbody>{this.state.showCatgeories}</tbody>
                         </Table>
                       </Card.Body>
                     </Card>

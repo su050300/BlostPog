@@ -20,32 +20,31 @@ router.get("/allTag", async function (req, res) {
   try {
     var tags = await Tag.findAll();
     var result = [];
-    tags.forEach(element => {
+    tags.forEach((element) => {
       var obj = {};
       obj[element.id] = element.tag;
       result.push(obj);
     });
     res.json({
-      tags:result,
-    })
+      tags: result,
+    });
   } catch (err) {
     console.log(err);
   }
 });
 
-
 router.get("/allCategories", async function (req, res) {
   try {
     var categories = await Category.findAll();
     var result = [];
-    categories.forEach(element => {
+    categories.forEach((element) => {
       var obj = {};
-      obj[element.id] = element.tag;
+      obj[element.id] = element.category;
       result.push(obj);
     });
     res.json({
-      categories:result,
-    })
+      categories: result,
+    });
   } catch (err) {
     console.log(err);
   }
@@ -84,7 +83,6 @@ router.post("/addTag", async function (req, res) {
 
 router.post("/addCategory", async function (req, res) {
   var category_word = req.body.category;
-  console.log(category_word);
   try {
     var category = await Category.findOne({
       where: {
@@ -109,6 +107,34 @@ router.post("/addCategory", async function (req, res) {
         console.log(err);
       }
     }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.post("/deleteCategory", async function (req, res) {
+  var category_id = req.body.categoryId;
+  try {
+    var category = Category.destroy({
+      where: {
+        id: category_id,
+      },
+    });
+    res.json({ message: "successfully deleted" });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.post("/deleteTag", async function (req, res) {
+  var tag_id = req.body.tagId;
+  try {
+    var tag = Tag.destroy({
+      where: {
+        id: tag_id,
+      },
+    });
+    res.json({ message: "successfully deleted" });
   } catch (err) {
     console.log(err);
   }

@@ -104,3 +104,16 @@ a {
 .list-group-item.active {
     background-color: #2f5597 !important;
 }
+
+.table-dark.table-striped tbody tr:nth-of-type(odd){
+    background-color:#0a1f44 !important;
+}
+
+.table-dark.table-striped tbody tr:nth-of-type(even){
+    background-color:#0a1f44 !important;
+}
+
+.alert{
+    margin-top:3%;
+    padding:0.3rem 0.6rem !important;
+}
