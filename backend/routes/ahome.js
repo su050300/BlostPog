@@ -16,6 +16,7 @@ router.get("/", function (req, res) {
   }
 });
 
+
 router.get("/allTag", async function (req, res) {
   try {
     var tags = await Tag.findAll();

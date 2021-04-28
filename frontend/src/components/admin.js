@@ -1,7 +1,8 @@
 /* eslint-disable */
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/admin.css";
+import "../css/global.css";
+import Styles from "../css/admin.module.css";
 import Axios from "axios";
 import {
   Button,
@@ -270,11 +271,11 @@ class Admin extends React.Component {
       categoryId: categoryId,
     }).then((response) => {
       this.setState({ delCategoryStatus: response.data.message });
-      // setTimeout(() => {
-      //   this.setState({
-      //     delCategoryStatus: "",
-      //   });
-      // }, 4000);
+      setTimeout(() => {
+        this.setState({
+          delCategoryStatus: "",
+        });
+      }, 4000);
       this.getCategories();
     });
   };
@@ -450,7 +451,7 @@ class Admin extends React.Component {
                 </ListGroup>
               </Col>
               <Col xs={10}>
-                <Tab.Content className="tab-margin">
+                <Tab.Content className={Styles.tabMargin}>
                   <Tab.Pane eventKey="#link1">
                     <Card>
                       <Card.Header className="text-center">
@@ -588,7 +589,7 @@ class Admin extends React.Component {
             </Row>
           </Tab.Container>
         ) : (
-          <h1>message if not login</h1>
+          <h4 className="mt-5 text-center text-white">Login To Continue</h4>
         )}
       </div>
     );

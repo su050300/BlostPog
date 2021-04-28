@@ -12,100 +12,113 @@ import {
 import Axios from "axios";
 import { Redirect } from "react-router-dom";
 import {
-  Form,
   Button,
-  Alert,
-  Card,
+  Navbar,
   Row,
-  FormControl,
-  Col,
   Container,
+  Nav,
+  Form,
+  Modal,
+  Alert,
+  Col,
+  NavDropdown,
+  Card,
+  Tab,
+  ListGroup,
+  FormControl,
+  Table,
 } from "react-bootstrap";
+import { Typeahead } from "react-bootstrap-typeahead";
 import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header";
-import List from "@editorjs/list";
-import Embed from "@editorjs/embed";
-import Raw from "@editorjs/raw";
-import Image from "@editorjs/simple-image";
-import Quote from "@editorjs/quote";
-import Code from "@editorjs/code";
-import Underline from "@editorjs/underline";
-import Personality from "@editorjs/personality";
-import Link from "@editorjs/link";
-import Paragraph from "@editorjs/paragraph";
-import Inline from "@editorjs/inline-code";
-import Table from "@editorjs/table";
-import Marker from "@editorjs/marker";
+import HeaderEditor from "@editorjs/header";
+import ListEditor from "@editorjs/list";
+import EmbedEditor from "@editorjs/embed";
+import RawEditor from "@editorjs/raw";
+import ImageEditor from "@editorjs/simple-image";
+import QuoteEditor from "@editorjs/quote";
+import CodeEditor from "@editorjs/code";
+import UnderlineEditor from "@editorjs/underline";
+import PersonalityEditor from "@editorjs/personality";
+import LinkEditor from "@editorjs/link";
+import ParagraphEditor from "@editorjs/paragraph";
+import InlineEditor from "@editorjs/inline-code";
+import TableEditor from "@editorjs/table";
+import MarkerEditor from "@editorjs/marker";
 
 import NavBar from "./navbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/editor.css";
+import Styles from "../css/editor.module.css";
+import "../css/global.css";
 import "react-pro-sidebar/dist/css/styles.css";
 
-import { v4 as uuidv4 } from 'uuid';
-
+import { v4 as uuidv4 } from "uuid";
 
 function Editor() {
+  const [tags, setTags] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [editorInstance, seteditorInstance] = useState(false);
+  const [selectTags, setselectTags] = useState([]);
+  const [selectCatgeories, setselectCatgeories] = useState([]);
   Axios.defaults.withCredentials = true;
   var editor = new EditorJS({
     holder: "editorjs",
     autofocus: true,
     tools: {
       header: {
-        class: Header,
+        class: HeaderEditor,
         inlineToolbar: true,
       },
       list: {
-        class: List,
+        class: ListEditor,
         inlineToolbar: true,
       },
       embed: {
-        class: Embed,
+        class: EmbedEditor,
         inlineToolbar: true,
       },
       raw: {
-        class: Raw,
+        class: RawEditor,
         inlineToolbar: true,
       },
       image: {
-        class: Image,
+        class: ImageEditor,
         inlineToolbar: true,
       },
       quote: {
-        class: Quote,
+        class: QuoteEditor,
         inlineToolbar: true,
       },
       code: {
-        class: Code,
+        class: CodeEditor,
         inlineToolbar: true,
       },
       underline: {
-        class: Underline,
+        class: UnderlineEditor,
         inlineToolbar: true,
       },
       personality: {
-        class: Personality,
+        class: PersonalityEditor,
         inlineToolbar: true,
       },
       link: {
-        class: Link,
+        class: LinkEditor,
         inlineToolbar: true,
       },
       paragraph: {
-        class: Paragraph,
+        class: ParagraphEditor,
         inlineToolbar: true,
       },
       inline: {
-        class: Inline,
+        class: InlineEditor,
         inlineToolbar: true,
       },
       table: {
-        class: Table,
+        class: TableEditor,
         inlineToolbar: true,
       },
       marker: {
-        class: Marker,
+        class: MarkerEditor,
         inlineToolbar: true,
       },
     },
@@ -127,17 +140,17 @@ function Editor() {
     /**
      * Editors log level (how many logs you want to see)
      */
-    //   logLevel: 5,
+    // logLevel: 1,
 
     /**
      * Enable read-only mode
      */
-    //   readOnly: true,
+    // readOnly: true,
 
     /**
      * Internalization config
      */
-    //   i18n: I18nConfig;
+    // i18n: "I18nConfig",
 
     /**
      * Fires when Editor is ready to work
@@ -157,7 +170,6 @@ function Editor() {
     editor
       .save()
       .then((outputData) => {
-        console.log("Article data: ", outputData);
         Axios.post("http://localhost:9000/save/blogs", {
           content: JSON.stringify(outputData),
           tags: "entertainment",
@@ -169,98 +181,91 @@ function Editor() {
         console.log("Saving failed: ", error);
       });
   };
-  var addTag = () => {
-    var value = document.getElementById("tags").value;
-    var id = uuidv4();
-    document.getElementById("container").innerHTML+=`<span class="mt-3 wrap"`+` id="`+id+`">`+value+`</span>`;
-  }
   return (
     <div>
       <NavBar />
-      <Row>
-        <Col xs="2">
-          <ProSidebar>
-            <SidebarHeader className="mt-2 mb-2 py-3 px-3 whte">
-              Hi username
-            </SidebarHeader>
-            <SidebarContent className="whte mt-2 mb-2">
-              <Menu className="whte">
-                <MenuItem>New Post</MenuItem>
-                <MenuItem>My Posts</MenuItem>
-              </Menu>
-            </SidebarContent>
-            <SidebarFooter className="margin-3 whte py-3 px-3">
-              Hello
-            </SidebarFooter>
-          </ProSidebar>
-        </Col>
-        <Col xs="8" className="mt-5">
-          <Card>
-            <Card.Body>
-              <div id="editorjs"></div>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col xs="2" className="mt-5">
-          <Card className="ml-3 mr-1">
-            <Card.Body>
-              <div className="post-details">
-                <h5>Post Details</h5>
-                <Form>
-                  <FormControl
-                    type="text"
-                    placeholder="title"
-                    className="mr-sm-2"
-                    name="title"
-                  />
-                </Form>
-              </div>
-            </Card.Body>
-          </Card>
-          <Card className="ml-3 mt-3 mr-1">
-            <Card.Body>
-              <div className="categories">
-                <h5>Categories</h5>
-                <Form>
-                  <FormControl
-                    type="text"
-                    placeholder="Search categories"
-                    className="mr-sm-2"
-                    name="categories"
-                  />
-                </Form>
-              </div>
-            </Card.Body>
-          </Card>
-          <Card className="ml-3 mt-3 mr-1">
-            <Card.Body>
-              <div className="tags">
-                <h5>Tags</h5>
-                <Form>
-                  <FormControl
-                    type="text"
-                    placeholder="Search tags"
-                    className="mr-sm-2"
-                    name="tags"
-                    id="tags"
-                  />
-                  <Button onClick={addTag} className="mt-2" variant="secondary" size="sm">Add</Button>
-                </Form>
-                <div id="container">
-
+      <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
+        <Row>
+          <Col xs={2}>
+            <ListGroup>
+              <ListGroup.Item action href="#link1" disabled>
+                Write Story
+              </ListGroup.Item>
+            </ListGroup>
+          </Col>
+          <Col xs={8}>
+            <Tab.Content className="mx-5 my-5">
+              <Tab.Pane eventKey="#link1">
+                <Card>
+                  <Card.Header
+                    style={{ backgroundColor: "#0a1f44", margin: "3% 15%" }}
+                    className="text-center"
+                  >
+                    Write Your Story
+                  </Card.Header>
+                  <Card.Body id="editorjs"></Card.Body>
+                </Card>
+              </Tab.Pane>
+            </Tab.Content>
+          </Col>
+          <Col xs={2}>
+            <Card className="ml-3 mr-1">
+              <Card.Body>
+                <div className="post-details">
+                  <h5>Post Details</h5>
+                  <Form>
+                    <FormControl
+                      type="text"
+                      placeholder="title"
+                      className="mr-sm-2"
+                      name="title"
+                    />
+                  </Form>
                 </div>
-              </div>
-            </Card.Body>
-          </Card>
-          <Card className="ml-3 mt-3 mr-1">
-            <Card.Body>
-              <Button onClick={submit} variant="info" size="md" block>
-                Submit For Review
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+              </Card.Body>
+            </Card>
+            <Card className="ml-3 mt-3 mr-1">
+              <Card.Body>
+                <Form.Group>
+                  <Form.Label>Catgeories</Form.Label>
+                  <Typeahead
+                    id="basic-typeahead-multiple"
+                    labelKey="name"
+                    multiple
+                    onChange={setselectCatgeories}
+                    options={categories}
+                    placeholder="Choose several states..."
+                    selected={selectCatgeories}
+                  />
+                </Form.Group>
+              </Card.Body>
+            </Card>
+            <Card className="ml-3 mt-3 mr-1">
+              <Card.Body>
+                <Form.Group>
+                  <Form.Label>Tags</Form.Label>
+                  <Typeahead
+                    id="basic-typeahead-multiple"
+                    labelKey="name"
+                    multiple
+                    onChange={selectTags}
+                    options={tags}
+                    placeholder="Choose several states..."
+                    selected={selectTags}
+                  />
+                </Form.Group>
+              </Card.Body>
+            </Card>
+            <Card className="ml-3 mt-3 mr-1">
+              <Card.Body>
+                <Button onClick={submit} variant="info" size="md" block>
+                  Submit For Review
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Tab.Container>
     </div>
   );
 }

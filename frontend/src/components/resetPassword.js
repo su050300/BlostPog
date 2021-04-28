@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/navbar.css";
+import "../css/global.css";
 import Axios from "axios";
 import { Redirect, useParams, withRouter } from "react-router-dom";
 import { Form, Button, Alert, Container, Row, Card } from "react-bootstrap";

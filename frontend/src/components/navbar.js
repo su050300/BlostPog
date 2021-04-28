@@ -1,7 +1,7 @@
 // /* eslint-disable */
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../css/navbar.css";
+import  Styles from "../css/navbar.module.css";
 
 import Axios from "axios";
 import ForgetPassword from "./forgetPassword";

@@ -1,0 +1,142 @@
+body {
+  background: #2f5597 !important;
+}
+
+.defcolor {
+  background: #203864 !important;
+  padding: 0.7% 7%;
+  box-shadow: 0 8px 20px 0 rgba(9, 29, 66, 0.6);
+}
+
+.encloser {
+  background: #2f5597 !important;
+}
+
+.modal-dialog {
+  max-width: 35% !important;
+}
+
+.modal-content {
+  box-shadow: 0 8px 20px 0 rgba(32, 56, 100, 0.6) !important;
+}
+
+.modal-content,
+input {
+  background: #022442 !important;
+  color: white !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid #002d64 !important;
+}
+
+.modal-footer {
+  border-top: 1px solid #002d64 !important;
+}
+
+.dropdown-menu {
+  margin-top: 13% !important;
+  background: #203864 !important;
+  border: 2px solid #203864 !important;
+}
+
+.dropdown-item,
+a {
+  color: #fff;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+  color: white;
+  background: #2f5597 !important;
+}
+
+.form-control {
+  margin: 1% 0%;
+  border: 1px solid #0d3e65 !important;
+  background-color: #0a1f44 !important;
+  color: white !important;
+}
+
+.rbt-token-removeable {
+  background-color: #0a1f44 !important;
+}
+
+.row {
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+}
+
+.col-2,
+.col-8 {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.whtr {
+  color: white;
+}
+
+.list-group {
+  padding: 7% 3%;
+  height: 91vh !important;
+  background: #203864 !important;
+  box-shadow: 0 8px 20px 0 rgba(32, 56, 100, 0.6);
+  color: white;
+}
+
+.list-group-item {
+  background-color: #0a1f44 !important;
+  color: white !important;
+  border-color: #203864 !important;
+}
+
+.list-group-item.active {
+  background-color: #2f5597 !important;
+}
+
+.table-dark.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #0a1f44 !important;
+}
+
+.table-dark.table-striped tbody tr:nth-of-type(even) {
+  background-color: #0a1f44 !important;
+}
+
+.alert {
+  margin-top: 3%;
+  padding: 0.3rem 0.6rem !important;
+}
+
+.ce-toolbar__plus,
+.edit {
+  color: white !important;
+}
+
+.cdx-block {
+  background: #203864 !important;
+}
+
+.edit {
+  margin: 4% 30% 0% 30%;
+}
+/* .codex-editor--empty{
+    display: none !important;
+} */
+
+.card {
+  background: #203864 !important;
+  box-shadow: 0 8px 20px 0 rgba(32, 56, 100, 0.6);
+  color: white;
+}
+
+@media (min-width: 992px) {
+  .modal-lg,
+  .modal-xl {
+    max-width: 35% !important;
+  }
+}
