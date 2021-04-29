@@ -134,6 +134,25 @@ a {
   color: white;
 }
 
+
+.rbt-menu{
+  background-color:#224992 !important;
+  transform: translate3d(0px, 5px, 0px) !important;
+}
+
+.rbt-token-removeable{
+  display:inline !important;
+  border:4px solid rgb(7, 7, 134);
+  padding:2% 2%;
+  margin-left:2%;
+}
+
+.rbt-token-removeable .close{
+  float:none !important;
+  margin-left:3% !important;
+  color:white !important;
+}
+
 @media (min-width: 992px) {
   .modal-lg,
   .modal-xl {

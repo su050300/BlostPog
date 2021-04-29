@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ProSidebar,
   Menu,
@@ -52,130 +52,158 @@ import Styles from "../css/editor.module.css";
 import "../css/global.css";
 import "react-pro-sidebar/dist/css/styles.css";
 
-import { v4 as uuidv4 } from "uuid";
-
+var tool = {
+  header: {
+    class: HeaderEditor,
+    inlineToolbar: true,
+  },
+  list: {
+    class: ListEditor,
+    inlineToolbar: true,
+  },
+  embed: {
+    class: EmbedEditor,
+    config: {
+      services: {
+        youtube: true,
+        coub: true,
+      },
+    },
+    inlineToolbar: true,
+  },
+  raw: {
+    class: RawEditor,
+    inlineToolbar: true,
+  },
+  image: {
+    class: ImageEditor,
+    inlineToolbar: true,
+  },
+  quote: {
+    class: QuoteEditor,
+    inlineToolbar: true,
+  },
+  code: {
+    class: CodeEditor,
+    inlineToolbar: true,
+  },
+  underline: {
+    class: UnderlineEditor,
+    inlineToolbar: true,
+  },
+  personality: {
+    class: PersonalityEditor,
+    inlineToolbar: true,
+  },
+  paragraph: {
+    class: ParagraphEditor,
+    inlineToolbar: true,
+  },
+  inline: {
+    class: InlineEditor,
+    inlineToolbar: true,
+  },
+  table: {
+    class: TableEditor,
+    inlineToolbar: true,
+  },
+  marker: {
+    class: MarkerEditor,
+    inlineToolbar: true,
+  },
+};
+var editor = new EditorJS({
+  holder: "editorjs",
+  autofocus: true,
+  tools: tool,
+  data: {},
+  minHeight: 450,
+  onReady: () => {
+    if(editor)
+    {
+      editor.destroy();
+      editor = new EditorJS({
+        holder:"editorjs",
+        autofocus:true,
+        tools:tool,
+        data:{},
+        minHeight:450,
+      })
+    }
+    console.log("Editor is ready");
+  },
+  onChange: (api) => {},
+});
 function Editor() {
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
   const [editorInstance, seteditorInstance] = useState(false);
   const [selectTags, setselectTags] = useState([]);
-  const [selectCatgeories, setselectCatgeories] = useState([]);
+  const [selectCategories, setselectCategories] = useState([]);
+  const [flag, setflag] = useState(1);
+  const [message, setmessage] = useState("");
   Axios.defaults.withCredentials = true;
-  var editor = new EditorJS({
-    holder: "editorjs",
-    autofocus: true,
-    tools: {
-      header: {
-        class: HeaderEditor,
-        inlineToolbar: true,
-      },
-      list: {
-        class: ListEditor,
-        inlineToolbar: true,
-      },
-      embed: {
-        class: EmbedEditor,
-        inlineToolbar: true,
-      },
-      raw: {
-        class: RawEditor,
-        inlineToolbar: true,
-      },
-      image: {
-        class: ImageEditor,
-        inlineToolbar: true,
-      },
-      quote: {
-        class: QuoteEditor,
-        inlineToolbar: true,
-      },
-      code: {
-        class: CodeEditor,
-        inlineToolbar: true,
-      },
-      underline: {
-        class: UnderlineEditor,
-        inlineToolbar: true,
-      },
-      personality: {
-        class: PersonalityEditor,
-        inlineToolbar: true,
-      },
-      link: {
-        class: LinkEditor,
-        inlineToolbar: true,
-      },
-      paragraph: {
-        class: ParagraphEditor,
-        inlineToolbar: true,
-      },
-      inline: {
-        class: InlineEditor,
-        inlineToolbar: true,
-      },
-      table: {
-        class: TableEditor,
-        inlineToolbar: true,
-      },
-      marker: {
-        class: MarkerEditor,
-        inlineToolbar: true,
-      },
-    },
-    /**
-     * First Block placeholder
-     */
-    //   placeholder: "Get started",
 
-    /**
-     * Data to render on Editor start
-     */
-    data: {},
-
-    /**
-     * Height of Editor's bottom area that allows to set focus on the last Block
-     */
-    minHeight: 450,
-
-    /**
-     * Editors log level (how many logs you want to see)
-     */
-    // logLevel: 1,
-
-    /**
-     * Enable read-only mode
-     */
-    // readOnly: true,
-
-    /**
-     * Internalization config
-     */
-    // i18n: "I18nConfig",
-
-    /**
-     * Fires when Editor is ready to work
-     */
-    onReady: () => {
-      console.log("Editor is ready");
-    },
-
-    /**
-     * Fires when something changed in DOM
-     */
-    onChange: (api) => {
-      console.log(api);
-    },
+  useEffect(() => {
+    getTags();
+    getCategories();
+    setflag(0);
   });
+
+  var getTags = () => {
+    if (flag) {
+      Axios.get("http://localhost:9000/getTags").then((res) => {
+        var result = res.data.tags;
+        var length = result.length;
+        var temp = [];
+        for (var i = 0; i < length; i++) {
+          temp.push(result[i][Object.keys(result[i])]);
+        }
+        setTags(temp);
+      });
+    }
+  };
+  var getCategories = () => {
+    if (flag) {
+      Axios.get("http://localhost:9000/getCategories").then((res) => {
+        var result = res.data.categories;
+        var length = result.length;
+        var temp = [];
+        for (var i = 0; i < length; i++) {
+          temp.push(result[i][Object.keys(result[i])]);
+        }
+        setCategories(temp);
+      });
+    }
+  };
   var submit = () => {
     editor
       .save()
       .then((outputData) => {
-        Axios.post("http://localhost:9000/save/blogs", {
-          content: JSON.stringify(outputData),
-          tags: "entertainment",
-        }).then((res) => {
-          console.log(res.data.message);
-        });
+        var title = document.getElementById("title").value;
+        if (title == "") {
+          setmessage("title can not be empty");
+          setTimeout(() => {
+            setmessage("");
+          }, 3000);
+        } else if (selectTags.length == 0) {
+          setmessage("tags can not be empty");
+          setTimeout(() => {
+            setmessage("");
+          }, 3000);
+        } else if (selectCategories.length == 0) {
+          setmessage("categories can not be empty");
+          setTimeout(() => {
+            setmessage("");
+          }, 3000);
+        } else if (outputData.blocks.length < 1) {
+          setmessage("Your tag does not have minimum required data");
+          setTimeout(() => {
+            setmessage("");
+          }, 3000);
+        } else {
+          console.log(outputData);
+        }
       })
       .catch((error) => {
         console.log("Saving failed: ", error);
@@ -184,6 +212,7 @@ function Editor() {
   return (
     <div>
       <NavBar />
+      {message == "" ? <div></div> : <Alert variant="danger">{message}</Alert>}
       <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
         <Row>
           <Col xs={2}>
@@ -193,7 +222,7 @@ function Editor() {
               </ListGroup.Item>
             </ListGroup>
           </Col>
-          <Col xs={8}>
+          <Col xs={7}>
             <Tab.Content className="mx-5 my-5">
               <Tab.Pane eventKey="#link1">
                 <Card>
@@ -208,17 +237,18 @@ function Editor() {
               </Tab.Pane>
             </Tab.Content>
           </Col>
-          <Col xs={2}>
+          <Col xs={3}>
             <Card className="ml-3 mr-1">
               <Card.Body>
                 <div className="post-details">
-                  <h5>Post Details</h5>
+                  <h6>Post Details</h6>
                   <Form>
                     <FormControl
                       type="text"
                       placeholder="title"
                       className="mr-sm-2"
                       name="title"
+                      id="title"
                     />
                   </Form>
                 </div>
@@ -232,10 +262,10 @@ function Editor() {
                     id="basic-typeahead-multiple"
                     labelKey="name"
                     multiple
-                    onChange={setselectCatgeories}
+                    onChange={setselectCategories}
                     options={categories}
                     placeholder="Choose several states..."
-                    selected={selectCatgeories}
+                    selected={selectCategories}
                   />
                 </Form.Group>
               </Card.Body>
@@ -248,7 +278,7 @@ function Editor() {
                     id="basic-typeahead-multiple"
                     labelKey="name"
                     multiple
-                    onChange={selectTags}
+                    onChange={setselectTags}
                     options={tags}
                     placeholder="Choose several states..."
                     selected={selectTags}

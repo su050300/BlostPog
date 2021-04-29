@@ -21,6 +21,8 @@ var ahomeRouter = require("./routes/ahome");
 var alogoutRouter = require("./routes/alogout");
 var aregisterRouter = require("./routes/aregister");
 var aloginRouter = require("./routes/alogin");
+var getTagRouter = require("./routes/getTags");
+var getCategoryRouter = require("./routes/getCatgeories");
 var {sequelize} = require("./models");
 
 var app = express();
@@ -66,12 +68,14 @@ app.use("/reset", forgetPassRouter);
 app.use("/changepass", changePassRouter);
 app.use("/profile", profileRouter);
 app.use("/save/blogs",createBolgRouter);
-
+app.use("/getTags",getTagRouter);
+app.use("/getCategories",getCategoryRouter);
 
 app.use("/admin",ahomeRouter);
 app.use("/admin/register",aregisterRouter);
 app.use("/admin/login",aloginRouter);
 app.use("/admin/logout",alogoutRouter);
+
 async function init() {
   try {
     await sequelize.authenticate();
