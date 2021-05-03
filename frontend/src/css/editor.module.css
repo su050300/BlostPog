@@ -1,3 +1,27 @@
 .contain{
-    margin:7% 0% !important;
+    margin:3% 15% !important;
+    height:80vh;
+}
+
+.images{
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+.updFiles{
+    padding:3% 3%;
+}
+
+.fixed{
+    overflow-y:scroll;
+    max-height:650px;
+    margin:0% 7%;
+    border:5px solid #0a1f44;
+}
+
+.imgHeight{
+    height:250px !important;
+    object-fit: fill;
+    width:100%;
+    margin:6% 2%;
+    border-radius: 4%;
 }

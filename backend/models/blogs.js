@@ -37,6 +37,15 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: 10,
     },
+    title:{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    slug:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true,
+    },
     content: {
       type: DataTypes.STRING,
       allowNull: true,

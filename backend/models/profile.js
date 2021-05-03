@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "authorId",
         foreignKeyConstraint: true,
       });
+      this.hasMany(models.Images, {
+        as: "images",
+        foreignKey: "profileId",
+        foreignKeyConstraint: true,
+      });
       // this.hasMany(models.Follower, {
       //   as: "followers",
       //   foreignKey: "followingId",

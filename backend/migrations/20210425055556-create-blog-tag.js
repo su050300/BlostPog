@@ -1,7 +1,13 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    return queryInterface.createTable('blogtags', {
+    return queryInterface.createTable('blogtag', {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: 10,
+      },
       blogId: {
         type: DataTypes.INTEGER,
         allowNull:false,
@@ -21,6 +27,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, DataTypes) => {
-    return queryInterface.dropTable('blogtags');
+    return queryInterface.dropTable('blogtag');
   }
 };

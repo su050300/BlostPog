@@ -17,12 +17,18 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.belongsTo(models.blogs,{
         as:"blog",
-        foreignKey:"blogId2",
+        foreignKey:"blogId",
         foreignKeyConstraint:true,
       });
     }
   };
   BlogTag.init({
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: 10,
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -33,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    tableName:"blog_tags",
+    tableName:"blogtag",
     modelName: 'BlogTag',
   });
   return BlogTag;

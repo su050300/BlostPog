@@ -8,6 +8,14 @@ module.exports = {
         primaryKey: true,
         autoIncrement: 10,
       },
+      title:{
+        type:DataTypes.STRING,
+        allowNull:false,
+      },
+      slug:{
+        type:DataTypes.STRING,
+        allowNull:false,
+      },
       authorId: {
         type: DataTypes.INTEGER,
         allowNull: false,

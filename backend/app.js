@@ -23,6 +23,7 @@ var aregisterRouter = require("./routes/aregister");
 var aloginRouter = require("./routes/alogin");
 var getTagRouter = require("./routes/getTags");
 var getCategoryRouter = require("./routes/getCatgeories");
+var uploadImageRouter = require("./routes/uploadImage");
 var {sequelize} = require("./models");
 
 var app = express();
@@ -68,6 +69,7 @@ app.use("/reset", forgetPassRouter);
 app.use("/changepass", changePassRouter);
 app.use("/profile", profileRouter);
 app.use("/save/blogs",createBolgRouter);
+app.use("/save/image",uploadImageRouter);
 app.use("/getTags",getTagRouter);
 app.use("/getCategories",getCategoryRouter);
 
