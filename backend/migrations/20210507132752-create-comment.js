@@ -1,28 +1,24 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    return queryInterface.createTable('blogs', {
+    await queryInterface.createTable('comment', {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: 10,
       },
-      title:{
-        type:DataTypes.STRING,
-        allowNull:false,
-      },
-      slug:{
-        type:DataTypes.STRING,
-        allowNull:false,
-      },
-      authorId: {
-        type: DataTypes.INTEGER,
+      comment: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+      blogId:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+      },
+      profileId:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -34,7 +30,7 @@ module.exports = {
       },
     });
   },
-  down: async (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('blogs');
+  down: async (queryInterface, DataTypes) => {
+    await queryInterface.dropTable('comment');
   }
 };

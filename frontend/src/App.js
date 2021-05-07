@@ -6,8 +6,8 @@ import forgetPassword from "./components/forgetPassword";
 import resetPassword from "./components/resetPassword";
 import profile from "./components/profile";
 import editor from "./components/editor";
-import blogs from "./components/blogs";
 import admin from "./components/admin";
+import blog from "./components/blog";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 
 class App extends Component {
@@ -22,8 +22,8 @@ class App extends Component {
             <Route exact path="/resetpass/:id" component={resetPassword} />
             <Route exact path="/profile" component={profile} />
             <Route exact path="/editor" component={editor} />
-            <Route exact path="/myblogs" component={blogs} />
             <Route exact path="/admin" component={admin} />
+            <Route exact path="/blog/:slug" component={blog} />
           </Switch>
         </BrowserRouter>
       </div>

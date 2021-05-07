@@ -198,6 +198,18 @@ a {
   margin: 0 auto 15px;
 }
 
+.codes{
+  background-color: aliceblue;
+}
+
+a{
+  text-decoration: none !important;
+}
+a:hover{
+  text-decoration:none !important;
+  color:white;
+}
+
 @media (min-width: 992px) {
 
   .modal-lg,

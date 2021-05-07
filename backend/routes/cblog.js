@@ -11,47 +11,66 @@ const {
 } = require("../models");
 const slugify = require("./slug");
 const { uuid } = require("uuidv4");
-// router.get('/',async function(req,res){
-//     var userId = req.session.userid;
-//     try{
-//         var user = await User.findOne({
-//             where:{
-//                 id:userId,
-//             },include:[
-//                 {
-//                     as:'profile',
-//                     model:Profile,
-//                 }
-//             ]
-//         })
-//         authorId = user.profile.id;
-//         try
-//         {
-//             var blog = await blogs.findAll({
-//                 where:{
-//                     authorId:authorId,
-//                 },
-//             })
-//             var result = [];
-//             var tags = [];
-//             blog.forEach(element => {
-//                 result.push(JSON.parse(element.content));
-//                 tags.push(element.tags);
-//             });
-//             res.json({
-//                 blogs:result,
-//                 tags:tags,
-//             });
-//         }catch(err){
-//             console.log(err);
-//         }
-//     }catch(err){
-//         console.log(err);
-//     }
+router.get("/", async function (req, res) {
+  var userId = req.session.userid;
+  try {
+    var user = await User.findOne({
+      where: {
+        id: userId,
+      },
+      include: [
+        {
+          as: "profile",
+          model: Profile,
+        },
+      ],
+    });
+    if (user) authorId = user.profile.id;
+    else res.json({ message: "user do not exist" });
+    try {
+      var blog = await blogs.findAll({
+        where: {
+          authorId: authorId,
+        },
+        order: [["updatedAt", "DESC"]],
+      });
+      var data = {
+        content: [],
+        categories: [],
+        tags: [],
+        message: "",
+        title: [],
+        slug: [],
+        pubdate: [],
+      };
+      for (var i = 0; i < blog.length; i++) {
+        var element = blog[i];
+        data.content.push(JSON.parse(element.content));
+        data.title.push(element.title);
+        data.slug.push(element.slug);
+        data.pubdate.push(element.updatedAt);
+        data.message = "Success";
+        var tag = await getTags(element.id);
+        var category = await getCategory(element.id);
+        if (tag) {
+          data.tags.push(tag);
+        }
+        if (category) {
+          data.categories.push(category);
+        }
+      }
+      res.json({data:data});
+    } catch (err) {
+      console.log(err);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-// })
 router.post("/", async function (req, res) {
   var content = JSON.stringify(req.body.data);
+  console.log(content.length);
   var tags = req.body.tags;
   var categories = req.body.categories;
   var title = req.body.title;
@@ -116,8 +135,8 @@ router.post("/", async function (req, res) {
             }
           });
           res.json({
-            message:"success",
-          })
+            message: "success",
+          });
         } catch (err) {
           console.log(err);
         }
@@ -132,6 +151,56 @@ router.post("/", async function (req, res) {
   }
 });
 
+var getTags = async (id) => {
+  try {
+    var result = [];
+    var tag = await BlogTag.findAll({
+      where: {
+        blogId: id,
+      },
+      attributes: ["tagId"],
+      include: [
+        {
+          as: "tag",
+          model: Tag,
+        },
+      ],
+    });
+    tag.forEach((element) => {
+      result.push(element.tag.tag);
+    });
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+var getCategory = async (id) => {
+  try {
+    var result = [];
+    var category = await BlogCategory.findAll({
+      where: {
+        blogId: id,
+      },
+      attributes: ["categoryId"],
+      include: [
+        {
+          as: "category",
+          model: Category,
+        },
+      ],
+    });
+    category.forEach((element) => {
+      result.push(element.category.category);
+    });
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
+
 var getTagId = async () => {
   try {
     var tags = await Tag.findAll();
@@ -144,6 +213,8 @@ var getTagId = async () => {
     console.log(err);
   }
 };
+
+
 var getCategoryId = async () => {
   try {
     var categories = await Category.findAll();

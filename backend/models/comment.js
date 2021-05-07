@@ -1,32 +1,36 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Follower extends Model {
+  class Comment extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      this.belongsTo(models.blogs,{
+        as:"blogComment",
+        foreignKey:"blogId",
+        foreignKeyConstraint:true,
+      })
       this.belongsTo(models.Profile, {
-        as: "follower",
-        foreignKey: "followerId",
-        foreignKeyConstraint: true,
-      });
-      this.belongsTo(models.Profile, {
-        as: "following",
-        foreignKey: "followingId",
+        as: "profileComment",
+        foreignKey: "profileId",
         foreignKeyConstraint: true,
       });
     }
   }
-  Follower.init(
+  Comment.init(
     {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: 10,
+      },
+      comment: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -39,9 +43,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      tableName: "follower",
-      modelName: "Follower",
+      tableName: "comment",
+      modelName: "Comment",
     }
   );
-  return Follower;
+  return Comment;
 };

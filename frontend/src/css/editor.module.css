@@ -1,5 +1,5 @@
 .contain{
-    margin:3% 15% !important;
+    margin:3% 8% !important;
     height:80vh;
 }
 
@@ -18,10 +18,27 @@
     border:5px solid #0a1f44;
 }
 
+.fullw{
+    width:100% !important;
+}
+
+.editorAlert{
+    margin-top:1% !important;
+    text-align: center;
+}
+
 .imgHeight{
     height:250px !important;
     object-fit: fill;
     width:100%;
     margin:6% 2%;
     border-radius: 4%;
+}
+
+.fixedm {
+    max-height: 120px !important;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }

@@ -24,6 +24,7 @@ var aloginRouter = require("./routes/alogin");
 var getTagRouter = require("./routes/getTags");
 var getCategoryRouter = require("./routes/getCatgeories");
 var uploadImageRouter = require("./routes/uploadImage");
+var getBlogRouter = require("./routes/blog");
 var {sequelize} = require("./models");
 
 var app = express();
@@ -72,6 +73,7 @@ app.use("/save/blogs",createBolgRouter);
 app.use("/save/image",uploadImageRouter);
 app.use("/getTags",getTagRouter);
 app.use("/getCategories",getCategoryRouter);
+app.use("/getblog",getBlogRouter);
 
 app.use("/admin",ahomeRouter);
 app.use("/admin/register",aregisterRouter);

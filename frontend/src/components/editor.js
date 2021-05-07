@@ -1,14 +1,5 @@
 /* eslint-disable */
 import React, { useState, useEffect } from "react";
-import {
-  ProSidebar,
-  Menu,
-  MenuItem,
-  SubMenu,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-} from "react-pro-sidebar";
 import Axios from "axios";
 import { Redirect } from "react-router-dom";
 import {
@@ -27,6 +18,7 @@ import {
   ListGroup,
   FormControl,
   Table,
+  Media,
   Image,
   InputGroup,
 } from "react-bootstrap";
@@ -45,6 +37,8 @@ import ParagraphEditor from "@editorjs/paragraph";
 import InlineEditor from "@editorjs/inline-code";
 import TableEditor from "@editorjs/table";
 import MarkerEditor from "@editorjs/marker";
+import { parseblog } from "./parseblogs";
+import uuid from "react-uuid";
 
 import NavBar from "./navbar";
 import { app } from "./default.js";
@@ -270,12 +264,22 @@ function Editor() {
   const [file, setfile] = useState("");
   const [filemessage, setfilemessage] = useState("");
   const [showimage, setshowimage] = useState([]);
+  const [showblogs, setshowblogs] = useState([]);
+
   Axios.defaults.withCredentials = true;
 
   useEffect(() => {
     getTags();
     getCategories();
+    const script = document.createElement("script");
+
+    script.src =
+      "https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js";
+    script.async = true;
+
+    document.body.appendChild(script);
     fetchImages(0);
+    getBlogs(0);
     setflag(0);
   });
 
@@ -332,14 +336,31 @@ function Editor() {
             setmessage("");
           }, 3000);
         } else {
-          // Axios.post("http://localhost:9000/save/blogs", {
-          //   title: title,
-          //   tags: selectTags,
-          //   categories: selectCategories,
-          //   data: outputData,
-          // }).then((res) => {
-          //   console.log(res.data.message);
-          // });
+          Axios.post("http://localhost:9000/save/blogs", {
+            title: title,
+            tags: selectTags,
+            categories: selectCategories,
+            data: outputData,
+          }).then((res) => {
+            setmessage(res.data.message);
+            setTimeout(() => {
+              setmessage("");
+            }, 3000);
+            if (editor) {
+              editor.destroy();
+              editor = new EditorJS({
+                holder: "editorjs",
+                autofocus: true,
+                tools: tool,
+                data: {},
+                minHeight: 550,
+              });
+            }
+            setselectCategories([]);
+            setselectTags([]);
+            document.getElementById("title").value = "";
+            getBlogs(1);
+          });
         }
       })
       .catch((error) => {
@@ -355,7 +376,6 @@ function Editor() {
       const fileRef = storageRef.child("image/" + file.name);
       await fileRef.put(file);
       const fileUrl = await fileRef.getDownloadURL();
-      console.log(fileUrl);
       Axios.post("http://localhost:9000/save/image", {
         url: fileUrl,
       }).then((res) => {
@@ -512,10 +532,58 @@ function Editor() {
       });
     }
   };
+
+  var getBlogs = (fl) => {
+    if (flag || fl) {
+      Axios.get("http://localhost:9000/save/blogs").then((res) => {
+        var myblogs = res.data.data;
+        var result = [];
+        var rows = myblogs.title.length;
+        for (var i = 0; i < rows; i++) {
+          var parseddata = parseblog.parse(myblogs.content[i]);
+          var url = "/blog/" + myblogs.slug[i];
+          var src =
+            "https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20";
+          myblogs.content[i].blocks.forEach((element) => {
+            if (element.type == "imageurl") {
+              src = element.data.url;
+              return;
+            }
+          });
+          result.push(
+            <a href={url}>
+              <Container style={{ marginTop: "5%", marginBottom: "5%" }}>
+                <Media style={{ margin: "0% 3%" }}>
+                  <img
+                    width={190}
+                    height={120}
+                    className="mr-3"
+                    src={src}
+                    alt={myblogs.title[i]}
+                  />
+                  <Media.Body className={Styles.fixedm}>
+                    <h4 className="text-bold">{myblogs.title[i]}</h4>
+                    <p>{parseddata}</p>
+                  </Media.Body>
+                </Media>
+              </Container>
+            </a>
+          );
+        }
+        setshowblogs(result);
+      });
+    }
+  };
   return (
     <div>
       <NavBar />
-      {message == "" ? <div></div> : <Alert variant="danger">{message}</Alert>}
+      {message == "" ? (
+        <div></div>
+      ) : (
+        <Alert className={Styles.editorAlert} variant="danger">
+          {message}
+        </Alert>
+      )}
       <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
         <Row>
           <Col xs={2}>
@@ -524,6 +592,7 @@ function Editor() {
                 Write Story
               </ListGroup.Item>
               <ListGroup.Item href="#link2">Your Images</ListGroup.Item>
+              <ListGroup.Item href="#link3">My Blogs</ListGroup.Item>
             </ListGroup>
           </Col>
           <Col xs={10}>
@@ -636,6 +705,11 @@ function Editor() {
                     </Row>
                   </Card.Footer>
                 </Card>
+              </Tab.Pane>
+            </Tab.Content>
+            <Tab.Content className="mx-5 my-5">
+              <Tab.Pane eventKey="#link3">
+                <Container>{showblogs}</Container>
               </Tab.Pane>
             </Tab.Content>
           </Col>

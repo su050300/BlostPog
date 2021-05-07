@@ -43,7 +43,7 @@ class NavBar extends React.Component {
       if (res.data.loggedIn == true) {
         this.setState({ isLogin: true });
       } else {
-        this.props.history.push('/');
+        // this.props.history.push('/');
         this.setState({ isLogin: false });
       }
     });
@@ -131,7 +131,7 @@ class NavBar extends React.Component {
     var loginStatus = this.state.loginStatus;
     return (
       <div className="encloser">
-        <Navbar className="defcolor" bg="none" variant="dark" sticky="top">
+        <Navbar className="defcolor" bg="none" variant="dark" static="top">
           <Navbar.Brand href="#home">BlogPost</Navbar.Brand>
 
           {isLogin == true ? (

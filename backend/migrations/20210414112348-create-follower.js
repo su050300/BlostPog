@@ -2,6 +2,12 @@
 module.exports = {
   up: async (queryInterface, DataTypes) => {
     return queryInterface.createTable("follower", {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: 10,
+      },
       followerId: {
         type: DataTypes.INTEGER,
         allowNull: false,

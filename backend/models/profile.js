@@ -23,16 +23,36 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "profileId",
         foreignKeyConstraint: true,
       });
-      // this.hasMany(models.Follower, {
-      //   as: "followers",
-      //   foreignKey: "followingId",
-      //   foreignKeyConstraint: true,
-      // });
-      // this.hasMany(models.Follower, {
-      //   as: "following",
-      //   foreignKey: "followerId",
-      //   foreignKeyConstraint: true,
-      // });
+      this.hasMany(models.Like, {
+        as: "likeProfile",
+        foreignKey: "profileId",
+        foreignKeyConstraint: true,
+      });
+      this.hasMany(models.Comment, {
+        as: "commentProfile",
+        foreignKey: "profileId",
+        foreignKeyConstraint: true,
+      });
+      this.hasMany(models.Saved, {
+        as: "savedProfile",
+        foreignKey: "profileId",
+        foreignKeyConstraint: true,
+      });
+      this.hasMany(models.History, {
+        as: "historyProfile",
+        foreignKey: "profileId",
+        foreignKeyConstraint: true,
+      });
+      this.hasMany(models.Follower, {
+        as: "followers",
+        foreignKey: "followingId",
+        foreignKeyConstraint: true,
+      });
+      this.hasMany(models.Follower, {
+        as: "following",
+        foreignKey: "followerId",
+        foreignKeyConstraint: true,
+      });
     }
     // toJSON(){
     //   return {...this.get(),id:undefined};
