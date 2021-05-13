@@ -23,6 +23,7 @@ export default class Home extends React.Component {
     Axios.defaults.withCredentials = true;
     this.state = {
       showblogs: [],
+      loaded: false,
     };
   }
   componentWillMount() {
@@ -41,10 +42,31 @@ export default class Home extends React.Component {
             return;
           }
         });
+        var date = new Date(element.updatedAt);
+        date = date.toDateString();
         result.push(
-          <a href={url}>
-            <Container style={{ marginTop: "5%", marginBottom: "5%" }}>
-              <Media style={{ margin: "0% 3%" }}>
+          <Container style={{ margin: "5% 0%" }}>
+            <Media>
+              <Media.Body className={Styles.fixed}>
+                <div>
+                  <a href={url}>
+                    <img
+                      width={30}
+                      height={30}
+                      className="mr-3"
+                      src={element.profile.avatar}
+                      alt={element.title}
+                    />
+                    {element.profile.first_name} {element.profile.last_name}
+                  </a>
+                </div>
+                <a href={url}>
+                  <h4 className="text-bold">{element.title}</h4>
+                  <p className="clamp">{parseblog.parse(content)}</p>
+                  <p style={{ bottom: "0" }}>{date}</p>
+                </a>
+              </Media.Body>
+              <a href={url}>
                 <img
                   width={190}
                   height={120}
@@ -52,21 +74,19 @@ export default class Home extends React.Component {
                   src={src}
                   alt={element.title}
                 />
-                <Media.Body className={Styles.fixed}>
-                  <h4 className="text-bold">{element.title}</h4>
-                  <p>
-                    {parseblog.parse(content)}
-                  </p>
-                </Media.Body>
-              </Media>
-            </Container>
-          </a>
+              </a>
+            </Media>
+          </Container>
         );
       });
       this.setState({ showblogs: result });
+      this.setState({ loaded: true });
     });
   }
   render() {
+    if (this.state.loaded == false) {
+      return <NavBar />;
+    }
     return (
       <div>
         <NavBar />

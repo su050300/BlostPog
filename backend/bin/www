@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
 var cors = require("cors");
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 /**
  * Get port from environment and store in Express.

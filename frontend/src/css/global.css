@@ -11,8 +11,8 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color:  #0a1f44;
-  outline: 1px solid  #0a1f44;
+  background-color: #0a1f44;
+  outline: 1px solid #0a1f44;
 }
 
 
@@ -96,8 +96,10 @@ a {
 }
 
 .list-group {
-  padding: 7% 3%;
-  height: 91vh !important;
+  position: fixed !important;
+  width: 300px !important;
+  padding: 3% 1%;
+  height: 100vh !important;
   background: #203864 !important;
   box-shadow: 0 8px 20px 0 rgba(32, 56, 100, 0.6);
   color: white;
@@ -198,16 +200,45 @@ a {
   margin: 0 auto 15px;
 }
 
-.codes{
+.codes {
   background-color: aliceblue;
 }
 
-a{
+a {
   text-decoration: none !important;
 }
-a:hover{
-  text-decoration:none !important;
-  color:white;
+
+a:hover {
+  text-decoration: none !important;
+  color: white;
+}
+
+.media {
+  padding: 3% 10%;
+  box-shadow: 0 2px 5px 0 rgba(9, 29, 66, 0.6);
+}
+
+.tag {
+  padding: 1% 1%;
+  border-radius: 5%;
+  background: rgb(6, 6, 63) !important;
+}
+
+.modal-90w {
+  margin: 0 !important;
+  padding: 0 !important;
+  float: right !important;
+  width: 30% !important;
+  height: 100% !important;
+}
+
+.modal-90w .modal-content {
+  height: 100% !important;
+  background:#2e4e8b !important;
+}
+
+.close {
+  color: white !important;
 }
 
 @media (min-width: 992px) {

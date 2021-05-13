@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { Category } = require("../models");
+var redirectUserLogin = require("../middlewares/check").checkUserLogin;
 
-router.get("/", async function (req, res) {
+router.get("/",redirectUserLogin, async function (req, res) {
   try {
     var categories = await Category.findAll();
     var result = [];

@@ -17,13 +17,13 @@ module.exports = (sequelize, DataTypes) => {
 
       this.hasMany(models.BlogCategory, {
         as: "categories",
-        foreignKey: "blogId1",
+        foreignKey: "blogId",
         foreignKeyConstraint: true,
       });
 
       this.hasMany(models.BlogTag, {
         as: "tags",
-        foreignKey: "blogId2",
+        foreignKey: "blogId",
         foreignKeyConstraint: true,
       });
       this.hasMany(models.Like, {
@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
       });
       this.hasMany(models.Comment, {
         as: "commentBlog",
+        foreignKey: "blogId",
+        foreignKeyConstraint: true,
+      });
+      this.hasMany(models.Query, {
+        as: "queryBlog",
         foreignKey: "blogId",
         foreignKeyConstraint: true,
       });

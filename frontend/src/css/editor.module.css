@@ -17,6 +17,11 @@
     margin:0% 7%;
     border:5px solid #0a1f44;
 }
+.fixe{
+    overflow-y:scroll;
+    height:450px;
+    margin:0% 7%;
+}
 
 .fullw{
     width:100% !important;

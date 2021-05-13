@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "profileId",
         foreignKeyConstraint: true,
       });
+      this.hasMany(models.Query, {
+        as: "queryProfile",
+        foreignKey: "profileId",
+        foreignKeyConstraint: true,
+      });
       this.hasMany(models.Saved, {
         as: "savedProfile",
         foreignKey: "profileId",

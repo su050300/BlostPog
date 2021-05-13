@@ -19,8 +19,11 @@ import {
   Tab,
   ListGroup,
   Table,
+  Media,
 } from "react-bootstrap";
+import { parseblog } from "./parseblogs";
 import { Redirect, withRouter } from "react-router-dom";
+import uuid from "react-uuid";
 class Admin extends React.Component {
   constructor(props) {
     super(props);
@@ -37,20 +40,31 @@ class Admin extends React.Component {
         username: "",
         password: "",
       },
+      tag: {
+        status: "",
+        success: false,
+        all: "",
+        show: [],
+        count: "",
+        delstatus: "",
+      },
+      category: {
+        status: "",
+        success: false,
+        all: "",
+        show: [],
+        count: "",
+        delstatus: "",
+      },
+      blogs: {
+        pending: [],
+        accepted: [],
+      },
       isadminLogin: false,
       loginStatus: "",
       registerStatus: "",
       forgotOrlogin: false,
-      tagStatus: "",
-      tagSuccess: false,
-      categoryStatus: "",
-      categorySuccess: false,
-      allTags: "",
-      allCategorie: "",
-      showTags: [],
-      showCategories: [],
-      delTagStatus: "",
-      delCategoryStatus: "",
+      loaded: false,
     };
   }
   componentWillMount() {
@@ -59,11 +73,14 @@ class Admin extends React.Component {
         this.setState({ isadminLogin: true });
         this.getTags();
         this.getCategories();
+        this.getPendingBlogs();
+        this.getAcceptedBlogs();
       } else {
         this.props.history.push("/admin");
         this.setState({ isadminLogin: false });
       }
     });
+    this.setState({ loaded: true });
   }
   handleChange = (event) => {
     const field = event.target.name;
@@ -143,15 +160,23 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/addTag", {
       tag: document.getElementById("tag").value,
     }).then((response) => {
+      if(response.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var temp = this.state.tag;
+      temp.status = response.data.message;
+      temp.success = response.data.success;
       this.setState({
-        tagSuccess: response.data.success,
-        tagStatus: response.data.message,
+        tag: temp,
       });
       if (response.data.success) {
         setTimeout(() => {
+          var temp = this.state.tag;
+          temp.status = "";
+          temp.success = false;
           this.setState({
-            tagStatus: "",
-            tagSuccess: false,
+            tag: temp,
           });
         }, 4000);
       }
@@ -164,15 +189,23 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/addCategory", {
       category: document.getElementById("category").value,
     }).then((response) => {
+      if(response.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var temp = {...this.state.category};
+      temp.status = response.data.message;
+      temp.success = response.data.success;
       this.setState({
-        categorySuccess: response.data.success,
-        categoryStatus: response.data.message,
+        category: temp,
       });
       if (response.data.success) {
         setTimeout(() => {
+          var temp = {...this.state.category};
+          temp.status = "";
+          temp.success = false;
           this.setState({
-            categoryStatus: "",
-            categorySuccess: false,
+            category: temp,
           });
         }, 4000);
         this.getCategories();
@@ -182,72 +215,210 @@ class Admin extends React.Component {
 
   getTags = (event) => {
     Axios.get("http://localhost:9000/admin/allTag").then((res) => {
-      this.setState({ allTags: res.data.tags });
+      if(res.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var temp = this.state.tag;
+      temp.all = res.data.tags;
+      temp.count = res.data.count;
+      this.setState({
+        tag: temp,
+      });
       this.showTags();
     });
   };
 
   getCategories = (event) => {
     Axios.get("http://localhost:9000/admin/allCategories").then((res) => {
-      this.setState({ allCategories: res.data.categories });
+      if(res.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var temp = this.state.category;
+      temp.all = res.data.categories;
+      temp.count = res.data.count;
+      this.setState({
+        category: temp,
+      });
       this.showCategories();
     });
   };
 
+  getPendingBlogs = (event) => {
+    Axios.get("http://localhost:9000/admin/pendingblogs").then((res) => {
+      if(res.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var blogs = res.data.blogs;
+      var result = [];
+      blogs.forEach((element) => {
+        var url = "/admin/" + element.slug;
+        var src =
+          "https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20";
+
+        var content = JSON.parse(element.content);
+        content.blocks.forEach((element) => {
+          if (element.type == "imageurl") {
+            src = element.data.url;
+            return;
+          }
+        });
+        result.push(
+          <a href={url} key={uuid()}>
+            <Container key={uuid()} style={{ marginTop: "5%", marginBottom: "5%" }}>
+              <Media style={{ margin: "0% 3%" }}>
+                <img
+                  width={190}
+                  height={120}
+                  className="mr-3"
+                  src={src}
+                  alt={element.title}
+                />
+                <Media.Body className={Styles.fixed}>
+                  <h4 className="text-bold">{element.title}</h4>
+                  <p>{parseblog.parse(content)}</p>
+                </Media.Body>
+              </Media>
+            </Container>
+          </a>
+        );
+      });
+      var temp = this.state.blogs;
+      temp.pending = result;
+      this.setState({
+        blogs: temp,
+      });
+    });
+  };
+
+  getAcceptedBlogs = (event) => {
+    Axios.get("http://localhost:9000/admin/acceptedblogs").then((res) => {
+      if(res.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var blogs = res.data.blogs;
+      var result = [];
+      blogs.forEach((element) => {
+        var url = "/admin/" + element.slug;
+        var src =
+          "https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20";
+
+        var content = JSON.parse(element.content);
+        content.blocks.forEach((element) => {
+          if (element.type == "imageurl") {
+            src = element.data.url;
+            return;
+          }
+        });
+        result.push(
+          <a href={url} key={uuid()}>
+            <Container style={{ marginTop: "5%", marginBottom: "5%" }}>
+              <Media style={{ margin: "0% 3%" }}>
+                <img
+                  width={190}
+                  height={120}
+                  className="mr-3"
+                  src={src}
+                  alt={element.title}
+                />
+                <Media.Body className={Styles.fixed}>
+                  <h4 className="text-bold">{element.title}</h4>
+                  <p>{parseblog.parse(content)}</p>
+                </Media.Body>
+              </Media>
+            </Container>
+          </a>
+        );
+      });
+      var temp = this.state.blogs;
+      temp.accepted = result;
+      this.setState({
+        blogs: temp,
+      });
+    });
+  };
+
   showTags = () => {
-    var length = this.state.allTags.length;
-    this.setState({ showTags: [] });
-    var table = this.state.showTags;
+    var length = this.state.tag.all.length;
+    var temp = this.state.tag;
+    temp.show = [];
+    this.setState({
+      tag: temp,
+    });
+    var table = this.state.tag.show;
     for (var i = 0; i < length; i++) {
-      var key = Object.keys(this.state.allTags[i])[0];
-      var value = this.state.allTags[i][key];
+      var key = Object.keys(this.state.tag.all[i])[0];
+      var value = this.state.tag.all[i][key];
+      var tem = [];
+      if (this.state.tag.count[i] == 0) {
+        tem.push(
+          <Button
+            size="sm"
+            onClick={(event) => this.deleteTag(event)}
+            id={key}
+            variant="info"
+            key={uuid()}
+            block
+          >
+            Delete
+          </Button>
+        );
+      }
       table.push(
         <tr>
           <td>{i + 1}</td>
           <td>{value}</td>
-          <td>
-            <Button
-              size="sm"
-              onClick={(event) => this.deleteTag(event)}
-              id={key}
-              variant="info"
-              block
-            >
-              Delete
-            </Button>
-          </td>
+          <td>{tem}</td>
         </tr>
       );
     }
-    this.setState({ showTags: table });
+    temp.show = table;
+    this.setState({
+      tag: temp,
+    });
   };
 
   showCategories = () => {
-    var length = this.state.allCategories.length;
-    this.setState({ showCategories: [] });
-    var table = this.state.showCategories;
+    var length = this.state.category.all.length;
+    var temp = this.state.category;
+    temp.show = [];
+    this.setState({
+      category: temp,
+    });
+    var table = this.state.category.show;
     for (var i = 0; i < length; i++) {
-      var key = Object.keys(this.state.allCategories[i])[0];
-      var value = this.state.allCategories[i][key];
+      var key = Object.keys(this.state.category.all[i])[0];
+      var value = this.state.category.all[i][key];
+      var tem = [];
+      if (this.state.category.count[i] == 0) {
+        tem.push(
+          <Button
+            size="sm"
+            onClick={(event) => this.deleteCatgeory(event)}
+            variant="info"
+            id={key}
+            key={uuid()}
+            block
+          >
+            Delete
+          </Button>
+        );
+      }
       table.push(
         <tr>
           <td>{i + 1}</td>
           <td>{value}</td>
-          <td>
-            <Button
-              size="sm"
-              onClick={(event) => this.deleteCatgeory(event)}
-              variant="info"
-              id={key}
-              block
-            >
-              Delete
-            </Button>
-          </td>
+          <td>{tem}</td>
         </tr>
       );
     }
-    this.setState({ showCatgeories: table });
+    temp.show = table;
+    this.setState({
+      category: temp,
+    });
   };
 
   deleteTag = (event) => {
@@ -255,10 +426,20 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/deleteTag", {
       tagId: tagId,
     }).then((response) => {
-      this.setState({ delTagStatus: response.data.message });
+      if(response.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var temp = this.state.tag;
+      temp.delstatus = response.data.message;
+      this.setState({
+        tag: temp,
+      });
       setTimeout(() => {
+        temp = this.state.tag;
+        temp.delstatus = "";
         this.setState({
-          delTagStatus: "",
+          tag: temp,
         });
       }, 4000);
       this.getTags();
@@ -270,10 +451,20 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/deleteCategory", {
       categoryId: categoryId,
     }).then((response) => {
-      this.setState({ delCategoryStatus: response.data.message });
+      if(response.data.loggedIn==false){
+        this.props.history.push("/");
+        this.props.history.push("/admin");
+      }
+      var temp = this.state.category;
+      temp.delstatus = response.data.message;
+      this.setState({
+        category: temp,
+      });
       setTimeout(() => {
+        temp = this.state.category;
+        temp.delstatus = "";
         this.setState({
-          delCategoryStatus: "",
+          category: temp,
         });
       }, 4000);
       this.getCategories();
@@ -284,35 +475,24 @@ class Admin extends React.Component {
     const isadminLogin = this.state.isadminLogin;
     const registerStatus = this.state.registerStatus;
     const loginStatus = this.state.loginStatus;
-    const tagStatus = this.state.tagStatus;
-    const tagSuccess = this.state.tagSuccess;
-    const categoryStatus = this.state.categoryStatus;
-    const categorySuccess = this.state.categorySuccess;
-    const delTagStatus = this.state.delTagStatus;
-    const delCategoryStatus = this.state.delCategoryStatus;
+    const tagStatus = this.state.tag.status;
+    const tagSuccess = this.state.tag.success;
+    const categoryStatus = this.state.category.status;
+    const categorySuccess = this.state.category.success;
+    const delTagStatus = this.state.tag.delstatus;
+    const delCategoryStatus = this.state.category.delstatus;
+    const pendingblogs = this.state.blogs.pending;
+    const acceptedblogs = this.state.blogs.accepted;
+    if (this.state.loaded == false) {
+      return <div></div>;
+    }
     return (
       <div>
-        <Navbar className="defcolor" bg="none" variant="dark" sticky="top">
-          <Navbar.Brand href="#home">Admin</Navbar.Brand>
-
-          {isadminLogin == true ? (
-            <Nav className="ml-auto">
-              <NavDropdown
-                title={
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20"
-                    height="35px"
-                    width="40px"
-                  ></img>
-                }
-              >
-                <NavDropdown.Divider />
-                <NavDropdown.Item onClick={() => this.logout()}>
-                  Logout
-                </NavDropdown.Item>
-              </NavDropdown>
-            </Nav>
-          ) : (
+        {isadminLogin == true ? (
+          <div style={{ display: "none" }}></div>
+        ) : (
+          <Navbar className="defcolor" bg="none" variant="dark" sticky="top">
+            <Navbar.Brand href="/admin">Admin</Navbar.Brand>
             <Nav className="ml-auto">
               <Nav.Link onClick={() => this.loginModalShow()}>Login</Nav.Link>
               <Modal
@@ -428,8 +608,8 @@ class Admin extends React.Component {
                 </Modal.Footer>
               </Modal>
             </Nav>
-          )}
-        </Navbar>
+          </Navbar>
+        )}
         {isadminLogin == true ? (
           <Tab.Container id="list-group-tabs-example" defaultActiveKey="#link1">
             <Row>
@@ -448,6 +628,17 @@ class Admin extends React.Component {
                   <ListGroup.Item action href="#link4">
                     All Categories
                   </ListGroup.Item>
+                  <hr width="100%" className="my-3" color="white"></hr>
+                  <ListGroup.Item action href="#link5">
+                    Pending Blogs
+                  </ListGroup.Item>
+                  <ListGroup.Item action href="#link6">
+                    Accepted Blogs
+                  </ListGroup.Item>
+
+                  <Navbar fixed="bottom">
+                    <Nav.Link onClick={() => this.logout()}>Logout</Nav.Link>
+                  </Navbar>
                 </ListGroup>
               </Col>
               <Col xs={10}>
@@ -492,6 +683,7 @@ class Admin extends React.Component {
                       </Card.Body>
                     </Card>
                   </Tab.Pane>
+
                   <Tab.Pane eventKey="#link2">
                     <Card>
                       <Card.Header className="text-center">
@@ -532,6 +724,7 @@ class Admin extends React.Component {
                       </Card.Body>
                     </Card>
                   </Tab.Pane>
+
                   <Tab.Pane eventKey="#link3">
                     <Card className="px-5 py-5">
                       <Card.Header
@@ -553,11 +746,12 @@ class Admin extends React.Component {
                           hover
                           variant="dark"
                         >
-                          <tbody>{this.state.showTags}</tbody>
+                          <tbody>{this.state.tag.show}</tbody>
                         </Table>
                       </Card.Body>
                     </Card>
                   </Tab.Pane>
+
                   <Tab.Pane eventKey="#link4">
                     <Card className="px-5 py-5">
                       <Card.Header
@@ -579,10 +773,26 @@ class Admin extends React.Component {
                           hover
                           variant="dark"
                         >
-                          <tbody>{this.state.showCatgeories}</tbody>
+                          <tbody>{this.state.category.show}</tbody>
                         </Table>
                       </Card.Body>
                     </Card>
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="#link5">
+                    {pendingblogs.length > 0 ? (
+                      <Container>{pendingblogs}</Container>
+                    ) : (
+                      <h4 className="text-center">No pending blogs</h4>
+                    )}
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="#link6">
+                    {acceptedblogs.length > 0 ? (
+                      <Container>{acceptedblogs}</Container>
+                    ) : (
+                      <h4 className="text-center">No accepted blogs</h4>
+                    )}
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

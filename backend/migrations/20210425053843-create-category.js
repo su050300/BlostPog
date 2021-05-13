@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    return queryInterface.createTable('categorie', {
+    return queryInterface.createTable('categories', {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,6 +24,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, DataTypes) => {
-    return queryInterface.dropTable('categorie');
+    return queryInterface.dropTable('categories');
   }
 };

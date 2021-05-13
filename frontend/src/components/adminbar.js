@@ -1,22 +1,27 @@
-// /* eslint-disable */
+/* eslint-disable */
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import  Styles from "../css/navbar.module.css";
-
+import "../css/global.css";
+import Styles from "../css/admin.module.css";
 import Axios from "axios";
-import ForgetPassword from "./forgetPassword";
 import {
   Button,
   Navbar,
+  Row,
+  Container,
   Nav,
   Form,
   Modal,
   Alert,
-  Container,
+  Col,
   NavDropdown,
+  Card,
+  Tab,
+  ListGroup,
+  Table,
 } from "react-bootstrap";
 import { Redirect, withRouter } from "react-router-dom";
-class NavBar extends React.Component {
+class AdminNavbar extends React.Component {
   constructor(props) {
     super(props);
     Axios.defaults.withCredentials = true;
@@ -32,19 +37,18 @@ class NavBar extends React.Component {
         username: "",
         password: "",
       },
-      isLogin: false,
+      isadminLogin: false,
       loginStatus: "",
       registerStatus: "",
-      forgotOrlogin: false,
     };
   }
   componentWillMount() {
-    Axios.get("http://localhost:9000/login").then((res) => {
+    Axios.get("http://localhost:9000/admin/login").then((res) => {
       if (res.data.loggedIn == true) {
-        this.setState({ isLogin: true });
+        this.setState({ isadminLogin: true });
       } else {
-        // this.props.history.push('/');
-        this.setState({ isLogin: false });
+        this.props.history.push("/admin");
+        this.setState({ isadminLogin: false });
       }
     });
   }
@@ -65,41 +69,36 @@ class NavBar extends React.Component {
   validate = (user) => {};
   register = (event) => {
     event.preventDefault();
-    // validate(user);
-    Axios.post("http://localhost:9000/register", {
+    Axios.post("http://localhost:9000/admin/register", {
       user: this.state.user,
     }).then((response) => {
-      this.setState({ registerStatus: response.data.message });
       if (response.data.registered == true) {
-        this.props.history.push("/register");
-        setTimeout(() => {
-          this.props.history.push("/");
-        }, 10000);
+        this.props.history.push("/admin/register");
+        this.props.history.push("/admin");
       }
     });
   };
   login = (event) => {
     event.preventDefault();
-    Axios.post("http://localhost:9000/login", {
+    Axios.post("http://localhost:9000/admin/login", {
       user: this.state.loginUser,
     }).then((response) => {
       this.setState({ loginStatus: response.data.message });
-      console.log(response.data.loggedIn);
       if (response.data.loggedIn == false) {
-        setTimeout(() => {
-          this.props.history.push("/login");
-          this.props.history.push("/");
-        }, 2000);
+        // setTimeout(() => {
+        //   this.props.history.push("/login");
+        //   this.props.history.push("/admin");
+        // }, 2000);
       } else {
         this.props.history.push("/login");
-        this.props.history.push("/");
+        this.props.history.push("/admin");
       }
     });
   };
   logout = () => {
-    Axios.get("http://localhost:9000/logout").then((res) => {
-      this.props.history.push("/logout");
-      this.props.history.push("/");
+    Axios.get("http://localhost:9000/admin/logout").then((res) => {
+      this.props.history.push("/admin/logout");
+      this.props.history.push("/admin");
     });
   };
   loginModalHide = () => {
@@ -126,15 +125,15 @@ class NavBar extends React.Component {
     this.setState({ registerStatus: "" });
   };
   render() {
-    var isLogin = this.state.isLogin;
-    var registerStatus = this.state.registerStatus;
-    var loginStatus = this.state.loginStatus;
+    const isadminLogin = this.state.isadminLogin;
+    const registerStatus = this.state.registerStatus;
+    const loginStatus = this.state.loginStatus;
     return (
-      <div className="encloser">
-        <Navbar className="defcolor" bg="none" variant="dark" static="top">
-          <Navbar.Brand href="#home">BlogPost</Navbar.Brand>
+      <div>
+        <Navbar className="defcolor" bg="none" variant="dark" sticky="top">
+          <Navbar.Brand href="/admin">Admin</Navbar.Brand>
 
-          {isLogin == true ? (
+          {isadminLogin == true ? (
             <Nav className="ml-auto">
               <NavDropdown
                 title={
@@ -145,9 +144,6 @@ class NavBar extends React.Component {
                   ></img>
                 }
               >
-                <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-                <NavDropdown.Item href="/editor">Write Your Story</NavDropdown.Item>
-                <NavDropdown.Item href="/history">History</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={() => this.logout()}>
                   Logout
@@ -171,36 +167,32 @@ class NavBar extends React.Component {
                   ) : (
                     <Alert variant="danger">{loginStatus}</Alert>
                   )}
-                  {this.state.forgotOrlogin == false ? (
-                    <Form onSubmit={this.login}>
-                      <Form.Group controlId="formBasicUser">
-                        <Form.Label>User Name</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="username"
-                          onChange={this.handleLoginChange}
-                          placeholder="Enter username"
-                          required
-                        />
-                      </Form.Group>
+                  <Form onSubmit={this.login}>
+                    <Form.Group controlId="formBasicUser">
+                      <Form.Label>User Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="username"
+                        onChange={this.handleLoginChange}
+                        placeholder="Enter username"
+                        required
+                      />
+                    </Form.Group>
 
-                      <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          name="password"
-                          onChange={this.handleLoginChange}
-                          placeholder="Password"
-                          required
-                        />
-                      </Form.Group>
-                      <Button variant="primary" type="submit">
-                        Login
-                      </Button>
-                    </Form>
-                  ) : (
-                    <ForgetPassword />
-                  )}
+                    <Form.Group controlId="formBasicPassword">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type="password"
+                        name="password"
+                        onChange={this.handleLoginChange}
+                        placeholder="Password"
+                        required
+                      />
+                    </Form.Group>
+                    <Button variant="info" type="submit">
+                      Login
+                    </Button>
+                  </Form>
                 </Modal.Body>
                 <Modal.Footer>
                   Not a memeber ?
@@ -210,21 +202,6 @@ class NavBar extends React.Component {
                   >
                     Signup
                   </Nav.Link>
-                  {this.state.forgotOrlogin == false ? (
-                    <Nav.Link
-                      className="text-info"
-                      onClick={() => this.setState({ forgotOrlogin: true })}
-                    >
-                      forgot password
-                    </Nav.Link>
-                  ) : (
-                    <Nav.Link
-                      className="text-info"
-                      onClick={() => this.setState({ forgotOrlogin: false })}
-                    >
-                      login
-                    </Nav.Link>
-                  )}
                 </Modal.Footer>
               </Modal>
               <Modal
@@ -273,7 +250,7 @@ class NavBar extends React.Component {
                         required
                       />
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="info" type="submit">
                       Register
                     </Button>
                   </Form>
@@ -295,4 +272,4 @@ class NavBar extends React.Component {
     );
   }
 }
-export default withRouter(NavBar);
+export default withRouter(AdminNavbar);

@@ -8,6 +8,8 @@ import profile from "./components/profile";
 import editor from "./components/editor";
 import admin from "./components/admin";
 import blog from "./components/blog";
+import blogAdmin from "./components/blogadmin";
+import blogUser from "./components/bloguser";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 
 class App extends Component {
@@ -24,6 +26,8 @@ class App extends Component {
             <Route exact path="/editor" component={editor} />
             <Route exact path="/admin" component={admin} />
             <Route exact path="/blog/:slug" component={blog} />
+            <Route exact path="/admin/:slug" component={blogAdmin} />
+            <Route exact path="/myblog/:slug" component={blogUser} />
           </Switch>
         </BrowserRouter>
       </div>

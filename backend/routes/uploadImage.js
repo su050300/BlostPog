@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { User, Profile, Images } = require("../models");
-router.post("/", async function (req, res) {
+var redirectUserLogin = require("../middlewares/check").checkUserLogin;
+router.post("/", redirectUserLogin, async function (req, res) {
   var link = req.body.url;
   var userId = req.session.userid;
   try {
@@ -35,43 +36,41 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.get("/",async function(req,res){
-    var userId = req.session.userid;
-    try{
-        var profileId = await User.findOne({
-            where: {
-              id: userId,
-            },
-            include: [
-              {
-                as: "profile",
-                model: Profile,
-              },
-            ],
-          });
-        if(profileId)
+router.get("/", redirectUserLogin, async function (req, res) {
+  var userId = req.session.userid;
+  try {
+    var profileId = await User.findOne({
+      where: {
+        id: userId,
+      },
+      include: [
         {
-            profileId = profileId.profile.id;
-            try{
-                var allimages = await Images.findAll({
-                    where:{
-                        profileId:profileId,
-                    },
-                    order:[['updatedAt','DESC']],
-                });
-                res.json({result:allimages});
-            }catch(err){
-                console.log(err);
-            }
-        }
-        else{
-            res.json({
-                message:"no user exists",
-            });
-        }
-    }catch(err){
+          as: "profile",
+          model: Profile,
+        },
+      ],
+    });
+    if (profileId) {
+      profileId = profileId.profile.id;
+      try {
+        var allimages = await Images.findAll({
+          where: {
+            profileId: profileId,
+          },
+          order: [["updatedAt", "DESC"]],
+        });
+        res.json({ result: allimages });
+      } catch (err) {
         console.log(err);
+      }
+    } else {
+      res.json({
+        message: "no user exists",
+      });
     }
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 module.exports = router;

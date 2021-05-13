@@ -1,5 +1,7 @@
 .fixed {
-    max-height: 120px !important;
+    height: 120px !important;
+}
+.clamp{
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;

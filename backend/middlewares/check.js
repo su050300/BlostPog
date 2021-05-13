@@ -5,4 +5,10 @@ module.exports = {
         }
         next();
     },
+    checkAdminLogin: function checkAdminLogin(req, res, next) {
+        if (!req.session.adminname) {
+            return res.send({loggedIn:false});
+        }
+        next();
+    },
 }
