@@ -12,7 +12,13 @@ const {
   Like,
   Comment,
   Query,
+  Embeddings,
 } = require("../models");
+require("@tensorflow/tfjs");
+// to run model faster using gpu and cpu
+require("@tensorflow/tfjs-node");
+// require("@tensorflow/tfjs-node-gpu");
+const use = require("@tensorflow-models/universal-sentence-encoder");
 var redirectAdminLogin = require("../middlewares/check").checkAdminLogin;
 
 const nodemailer = require("nodemailer");
@@ -32,7 +38,7 @@ var message = {
   text: "Your blog has been published.",
 };
 
-router.get("/", redirectAdminLogin, function (req, res) {
+router.get("/", function (req, res) {
   if (req.session.adminname) {
     res.send({
       loggedIn: true,
@@ -199,6 +205,10 @@ router.get("/pendingblogs", redirectAdminLogin, async function (req, res) {
       where: {
         status: false,
       },
+      include: {
+        as: "profile",
+        model: Profile,
+      },
       order: [["updatedAt", "ASC"]],
     });
     if (blog) {
@@ -216,6 +226,10 @@ router.get("/acceptedblogs", redirectAdminLogin, async function (req, res) {
     var blog = await blogs.findAll({
       where: {
         status: true,
+      },
+      include: {
+        as: "profile",
+        model: Profile,
       },
       order: [["updatedAt", "DESC"]],
     });
@@ -361,6 +375,7 @@ router.post("/saveblog", redirectAdminLogin, async function (req, res) {
 router.post("/publishblog", redirectAdminLogin, async function (req, res) {
   var id = req.body.id;
   var profileId = req.body.author;
+  var model = await use.load();
   try {
     var blog = await blogs.update(
       {
@@ -372,6 +387,13 @@ router.post("/publishblog", redirectAdminLogin, async function (req, res) {
         },
       }
     );
+    var vec = await model.embed([blog.title]);
+    if (vec) {
+      Embeddings.create({
+        blogId: id,
+        embedding: vec.arraySync(),
+      });
+    }
     if (blog) {
       try {
         blog = await blogs.findOne({

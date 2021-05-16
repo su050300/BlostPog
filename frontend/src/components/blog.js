@@ -51,31 +51,37 @@ class Blog extends React.Component {
       blogId: this.state.blogId,
     }).then((res) => {
       if (res.data.success == true) {
-        this.setState({likes:res.data.result.length});
+        this.setState({ likes: res.data.result.length });
       }
     });
     Axios.post("http://localhost:9000/like/liked", {
       blogId: this.state.blogId,
       authorId: this.state.authorId,
     }).then((res) => {
-      if(res.data.loggedIn == false)
-      {
-        var data = (<Button size="sm" variant="info" disabled="true">
-        Likes {this.state.likes}
-      </Button>);
-      this.setState({lik:data});
+      if (res.data.loggedIn == false) {
+        var data = (
+          <Button key={uuid()} size="sm" variant="info" disabled>
+            Likes {this.state.likes}
+          </Button>
+        );
+        this.setState({ lik: data });
       }
       if (res.data.success == true) {
         var data = [];
         if (res.data.like == false) {
           data.push(
-            <Button size="sm" variant="info" disabled="true">
+            <Button key={uuid()} size="sm" variant="info" disabled>
               Likes {this.state.likes}
             </Button>
           );
         } else {
           data.push(
-            <Button size="sm" variant="info" onClick={() => this.like()}>
+            <Button
+              key={uuid()}
+              size="sm"
+              variant="info"
+              onClick={() => this.like()}
+            >
               Like {this.state.likes}
             </Button>
           );
@@ -91,6 +97,7 @@ class Blog extends React.Component {
         var result = [];
         var blog = res.data.data;
         var parseddata = parseblog.parse(blog.content[0]);
+        console.log(blog.content[0]);
         var tags = blog.tag;
         var categories = blog.category;
         var res = [];
@@ -98,10 +105,18 @@ class Blog extends React.Component {
         this.setState({ author: blog.author[0] });
         this.setState({ comm: blog.comments[0].length });
         categories.forEach((element) => {
-          res.push(<span className="tag text-capitalize mx-1">{element}</span>);
+          res.push(
+            <span key={uuid()} className="tag text-capitalize mx-1">
+              {element}
+            </span>
+          );
         });
         tags.forEach((element) => {
-          res.push(<span className="tag text-capitalize mx-1">{element}</span>);
+          res.push(
+            <span key={uuid()} className="tag text-capitalize mx-1">
+              {element}
+            </span>
+          );
         });
         result.push(
           <Row key={uuid()}>

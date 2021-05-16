@@ -175,6 +175,9 @@ export const parseblog = {
       </pre>
     );
   },
+  text: (content) => {
+    return (<p>{parseContent(content)}</p>);
+  },
   parse : (content) => {
     var data = content.blocks;
     var objects = data.length;
@@ -210,8 +213,12 @@ export const parseblog = {
           var result = parseblog.html(element);
           res.push(result);
           break;
+        case "paragraph":
+          var result = parseblog.text(element.data.text);
+          res.push(result);
       }
     }
     return res;
   },
+
 };

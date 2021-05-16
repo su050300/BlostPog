@@ -1,8 +1,9 @@
 // /* eslint-disable */
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import  Styles from "../css/navbar.module.css";
+import Styles from "../css/navbar.module.css";
 
+import SearchField from "react-search-field";
 import Axios from "axios";
 import ForgetPassword from "./forgetPassword";
 import {
@@ -14,8 +15,11 @@ import {
   Alert,
   Container,
   NavDropdown,
+  FormControl,
+  Dropdown,
 } from "react-bootstrap";
 import { Redirect, withRouter } from "react-router-dom";
+import uuid from "react-uuid";
 class NavBar extends React.Component {
   constructor(props) {
     super(props);
@@ -36,9 +40,10 @@ class NavBar extends React.Component {
       loginStatus: "",
       registerStatus: "",
       forgotOrlogin: false,
+      showsearch: [],
     };
   }
-  componentWillMount() {
+  componentDidMount() {
     Axios.get("http://localhost:9000/login").then((res) => {
       if (res.data.loggedIn == true) {
         this.setState({ isLogin: true });
@@ -125,6 +130,44 @@ class NavBar extends React.Component {
     this.setState({ loginStatus: "" });
     this.setState({ registerStatus: "" });
   };
+
+  search = () => {
+    var text = document.getElementById("text").value;
+    Axios.post("http://localhost:9000/search/title", {
+      text: text,
+    }).then((res) => {
+      var result = [];
+      res.data.results.forEach((element) => {
+        var slug = element[1];
+        var url = `http://localhost:3000/blog/${slug}`;
+        result.push(
+          <Dropdown.Item key={uuid()} href={url}>
+            {element[2]}
+          </Dropdown.Item>
+        );
+      });
+      this.setState({ showsearch: result });
+    });
+  };
+
+  searchByTag = (e) => {
+    var text = e.target.value;
+    Axios.post("http://localhost:9000/search/tag", {
+      text: text,
+    }).then((res) => {
+      var result = [];
+      res.data.tags.forEach((element) => {
+        var id = element.id;
+        var url = `http://localhost:3000/tag/${id}`;
+        result.push(
+          <Dropdown.Item key={uuid()} href={url}>
+            {element.tag}
+          </Dropdown.Item>
+        );
+      });
+      this.setState({ showsearch: result });
+    });
+  };
   render() {
     var isLogin = this.state.isLogin;
     var registerStatus = this.state.registerStatus;
@@ -136,6 +179,26 @@ class NavBar extends React.Component {
 
           {isLogin == true ? (
             <Nav className="ml-auto">
+              <Form inline>
+                <FormControl
+                  type="text"
+                  placeholder="Search by tag"
+                  className="mr-sm-2"
+                  id="text"
+                  onChange={(e) => {
+                    this.searchByTag(e);
+                  }}
+                  autoComplete="off"
+                />
+                <Button
+                  variant="outline-info"
+                  onClick={(e) => {
+                    this.search();
+                  }}
+                >
+                  Search By Title
+                </Button>
+              </Form>
               <NavDropdown
                 title={
                   <img
@@ -146,7 +209,9 @@ class NavBar extends React.Component {
                 }
               >
                 <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-                <NavDropdown.Item href="/editor">Write Your Story</NavDropdown.Item>
+                <NavDropdown.Item href="/editor">
+                  Write Your Story
+                </NavDropdown.Item>
                 <NavDropdown.Item href="/history">History</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={() => this.logout()}>
@@ -156,6 +221,26 @@ class NavBar extends React.Component {
             </Nav>
           ) : (
             <Nav className="ml-auto">
+              <Form inline>
+                <FormControl
+                  type="text"
+                  placeholder="Search by tag"
+                  className="mr-sm-2"
+                  id="text"
+                  onChange={(e) => {
+                    this.searchByTag(e);
+                  }}
+                  autoComplete="off"
+                />
+                <Button
+                  variant="outline-info"
+                  onClick={(e) => {
+                    this.search();
+                  }}
+                >
+                  Search By Title
+                </Button>
+              </Form>
               <Nav.Link onClick={() => this.loginModalShow()}>Login</Nav.Link>
               <Modal
                 show={this.state.loginModal}
@@ -291,6 +376,23 @@ class NavBar extends React.Component {
             </Nav>
           )}
         </Navbar>
+        {this.state.showsearch.length > 0 ? (
+          <div
+            style={{
+              position: "absolute",
+              width: "250px",
+              maxHeight: "500px",
+              background: "#203864",
+              left: "70%",
+              overflow: "scroll",
+            }}
+            id="insert"
+          >
+            {this.state.showsearch}
+          </div>
+        ) : (
+          <div style={{ display: "none" }}></div>
+        )}
       </div>
     );
   }

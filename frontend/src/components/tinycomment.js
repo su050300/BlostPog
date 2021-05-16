@@ -32,6 +32,10 @@ export default class Tinymce extends React.Component {
         blogId: this.state.blogId,
         authorId: this.state.authorId,
       }).then((res) => {
+        if (res.data.loggedIn == false) {
+          this.props.history.push("/");
+          return;
+        }
         if (res.data.success == true) {
           this.fetchComments();
         }
@@ -42,6 +46,10 @@ export default class Tinymce extends React.Component {
     Axios.post("http://localhost:9000/comment/delete", {
       id: id.id,
     }).then((res) => {
+      if (res.data.loggedIn == false) {
+        this.props.history.push("/");
+        return;
+      }
       this.fetchComments();
     });
   };
@@ -55,6 +63,7 @@ export default class Tinymce extends React.Component {
         data.forEach((element) => {
           var data = parse(element.comment);
           var date = new Date(element.updatedAt);
+          date = date.toDateString();
           var user =
             element.profileComment.first_name +
             " " +
@@ -62,7 +71,7 @@ export default class Tinymce extends React.Component {
           var avatar = element.profileComment.avatar;
           comment.push(
             <div key={uuid()} className="px-2 py-2">
-              <a href="#">
+              <a href="#" style={{fontSize:"0.8rem"}}>
                 <img
                   width={30}
                   height={30}
@@ -70,7 +79,7 @@ export default class Tinymce extends React.Component {
                   src={avatar}
                   alt={user}
                 />
-                <span className="mx-2">{user}</span>
+                <span className="mx-2">{user}</span><span className="mx-2">{date}</span>
               </a>
 
               <p className="my-2">{data}</p>

@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const {Admin} = require("../models");
 
 router.get("/", function (req, res) {
+  console.log(req.session.adminname);
   if (req.session.adminname) {
     res.json({
       loggedIn: true,

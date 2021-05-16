@@ -10,6 +10,7 @@ import admin from "./components/admin";
 import blog from "./components/blog";
 import blogAdmin from "./components/blogadmin";
 import blogUser from "./components/bloguser";
+import blogTag from "./components/blogtag";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 
 class App extends Component {
@@ -28,6 +29,7 @@ class App extends Component {
             <Route exact path="/blog/:slug" component={blog} />
             <Route exact path="/admin/:slug" component={blogAdmin} />
             <Route exact path="/myblog/:slug" component={blogUser} />
+            <Route exact path="/tag/:id" component={blogTag} />
           </Switch>
         </BrowserRouter>
       </div>

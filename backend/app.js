@@ -28,7 +28,8 @@ var getBlogRouter = require("./routes/blog");
 var getQueryRouter = require("./routes/query");
 var getCommentRouter = require("./routes/comment");
 var getLikeRouter = require("./routes/like");
-var {sequelize} = require("./models");
+var getSearchRouter = require("./routes/search");
+var { sequelize } = require("./models");
 
 var app = express();
 
@@ -72,19 +73,20 @@ app.use("/reset/:token", resetPassRouter);
 app.use("/reset", forgetPassRouter);
 app.use("/changepass", changePassRouter);
 app.use("/profile", profileRouter);
-app.use("/save/blogs",createBolgRouter);
-app.use("/save/image",uploadImageRouter);
-app.use("/getTags",getTagRouter);
-app.use("/getCategories",getCategoryRouter);
-app.use("/getblog",getBlogRouter);
-app.use("/user",getQueryRouter);
-app.use("/comment",getCommentRouter);
-app.use("/like",getLikeRouter);
+app.use("/save/blogs", createBolgRouter);
+app.use("/save/image", uploadImageRouter);
+app.use("/getblog", getBlogRouter);
+app.use("/user", getQueryRouter);
+app.use("/comment", getCommentRouter);
+app.use("/like", getLikeRouter);
+app.use("/search", getSearchRouter);
 
-app.use("/admin",ahomeRouter);
-app.use("/admin/register",aregisterRouter);
-app.use("/admin/login",aloginRouter);
-app.use("/admin/logout",alogoutRouter);
+app.use("/admin", ahomeRouter);
+app.use("/admin/getTags", getTagRouter);
+app.use("/admin/getCategories", getCategoryRouter);
+app.use("/admin/register", aregisterRouter);
+app.use("/admin/login", aloginRouter);
+app.use("/admin/logout", alogoutRouter);
 
 async function init() {
   try {

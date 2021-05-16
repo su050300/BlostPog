@@ -55,7 +55,6 @@ router.get("/",redirectUserLogin, async function (req, res) {
       var blog = await blogs.findAll({
         where: {
           authorId: authorId,
-          status: true,
         },
         order: [["updatedAt", "DESC"]],
       });
@@ -65,6 +64,7 @@ router.get("/",redirectUserLogin, async function (req, res) {
         title: [],
         slug: [],
         pubdate: [],
+        status:[],
       };
       for (var i = 0; i < blog.length; i++) {
         var element = blog[i];
@@ -72,6 +72,7 @@ router.get("/",redirectUserLogin, async function (req, res) {
         data.title.push(element.title);
         data.slug.push(element.slug);
         data.pubdate.push(element.updatedAt);
+        data.status.push(element.status);
         data.message = "Success";
       }
       res.json({ data: data });

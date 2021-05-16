@@ -1,4 +1,19 @@
-
 .tabMargin {
     margin: 10% 20%;
+}
+
+.fixed {
+    margin:3% 0% !important;
+    height: 150px !important;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+}
+
+.clamp {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }

@@ -31,9 +31,13 @@ export default class Tinymce extends React.Component {
       var content = this.editorRef.current.getContent();
       Axios.post("http://localhost:9000/user/query", {
         content: content,
-        blogId: this.state.authorId,
-        authorId: this.state.blogId,
+        blogId: this.state.blogId,
+        authorId: this.state.authorId,
       }).then((res) => {
+        if (res.data.loggedIn == false) {
+          this.props.history.push("/");
+          return;
+        }
         if (res.data.success == true) {
           this.fetchComments();
         }
@@ -44,14 +48,22 @@ export default class Tinymce extends React.Component {
     Axios.post("http://localhost:9000/user/delquery", {
       id: id.id,
     }).then((res) => {
+      if (res.data.loggedIn == false) {
+        this.props.history.push("/");
+        return;
+      }
       this.fetchComments();
     });
   };
   fetchComments = () => {
     Axios.post("http://localhost:9000/user/getquery", {
-      blogId: this.state.authorId,
-      authorId: this.state.blogId,
+      blogId: this.state.blogId,
+      authorId: this.state.authorId,
     }).then((res) => {
+      if (res.data.loggedIn == false) {
+        this.props.history.push("/");
+        return;
+      }
       if (res.data.success == true) {
         var data = res.data.result;
         var comment = [];
@@ -59,13 +71,13 @@ export default class Tinymce extends React.Component {
           var html = parse(element.comment);
           var id = element.id;
           var add = [];
-          if (element.sender == "admin") {
+          if (element.sender != "admin") {
             add.push(
               <div
                 key={uuid()}
                 style={{ width: "100%", float: "right", marginTop: "4%" }}
               >
-                <Card style={{ width: "50%", float: "left" }}>
+                <Card style={{ width: "50%", float: "right" }}>
                   <Card.Header className="text-center">
                     {element.updatedAt.split("T")[0]}
                   </Card.Header>
@@ -86,7 +98,7 @@ export default class Tinymce extends React.Component {
                 key={uuid()}
                 style={{ width: "100%", float: "right", marginTop: "4%" }}
               >
-                <Card style={{ width: "50%", float: "right" }}>
+                <Card style={{ width: "50%", float: "left" }}>
                   <Card.Header className="text-center">
                     {element.updatedAt.split("T")[0]}
                   </Card.Header>
@@ -113,7 +125,7 @@ export default class Tinymce extends React.Component {
           Queries
         </Card.Header>
         <Card.Body className={Styles.fixe}>
-          {this.state.comments.length > 0 ?(<div>{this.state.comments}</div>):(<p class="text-center">No Queries</p>)}
+          {this.state.comments.length > 0 ?(<div>{this.state.comments}</div>):(<p className="text-center">No Queries</p>)}
         </Card.Body>
 
         {this.state.blogStatus == true ? (

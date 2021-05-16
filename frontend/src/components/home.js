@@ -16,6 +16,7 @@ import {
   Media,
 } from "react-bootstrap";
 import Styles from "../css/home.module.css";
+import uuid from "react-uuid";
 import { parseblog } from "./parseblogs";
 export default class Home extends React.Component {
   constructor(props) {
@@ -45,7 +46,7 @@ export default class Home extends React.Component {
         var date = new Date(element.updatedAt);
         date = date.toDateString();
         result.push(
-          <Container style={{ margin: "5% 0%" }}>
+          <Container key={uuid()} style={{ margin: "5% 0%" }}>
             <Media>
               <Media.Body className={Styles.fixed}>
                 <div>
@@ -58,12 +59,12 @@ export default class Home extends React.Component {
                       alt={element.title}
                     />
                     {element.profile.first_name} {element.profile.last_name}
+                    <span style={{ bottom: "0" }}>{date}</span>
                   </a>
                 </div>
                 <a href={url}>
                   <h4 className="text-bold">{element.title}</h4>
-                  <p className="clamp">{parseblog.parse(content)}</p>
-                  <p style={{ bottom: "0" }}>{date}</p>
+                  <div className={Styles.clamp}>{parseblog.parse(content)}</div>
                 </a>
               </Media.Body>
               <a href={url}>

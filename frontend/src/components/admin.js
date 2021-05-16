@@ -70,6 +70,7 @@ class Admin extends React.Component {
   componentWillMount() {
     Axios.get("http://localhost:9000/admin/login").then((res) => {
       if (res.data.loggedIn == true) {
+        console.log(res.data.loggedIn);
         this.setState({ isadminLogin: true });
         this.getTags();
         this.getCategories();
@@ -160,9 +161,10 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/addTag", {
       tag: document.getElementById("tag").value,
     }).then((response) => {
-      if(response.data.loggedIn==false){
+      if (response.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var temp = this.state.tag;
       temp.status = response.data.message;
@@ -189,11 +191,12 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/addCategory", {
       category: document.getElementById("category").value,
     }).then((response) => {
-      if(response.data.loggedIn==false){
+      if (response.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
-      var temp = {...this.state.category};
+      var temp = { ...this.state.category };
       temp.status = response.data.message;
       temp.success = response.data.success;
       this.setState({
@@ -201,7 +204,7 @@ class Admin extends React.Component {
       });
       if (response.data.success) {
         setTimeout(() => {
-          var temp = {...this.state.category};
+          var temp = { ...this.state.category };
           temp.status = "";
           temp.success = false;
           this.setState({
@@ -213,11 +216,12 @@ class Admin extends React.Component {
     });
   };
 
-  getTags = (event) => {
+  getTags = () => {
     Axios.get("http://localhost:9000/admin/allTag").then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var temp = this.state.tag;
       temp.all = res.data.tags;
@@ -229,11 +233,12 @@ class Admin extends React.Component {
     });
   };
 
-  getCategories = (event) => {
+  getCategories = () => {
     Axios.get("http://localhost:9000/admin/allCategories").then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var temp = this.state.category;
       temp.all = res.data.categories;
@@ -245,15 +250,18 @@ class Admin extends React.Component {
     });
   };
 
-  getPendingBlogs = (event) => {
+  getPendingBlogs = () => {
     Axios.get("http://localhost:9000/admin/pendingblogs").then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var blogs = res.data.blogs;
       var result = [];
       blogs.forEach((element) => {
+        var date = new Date(element.updatedAt);
+        date = date.toDateString();
         var url = "/admin/" + element.slug;
         var src =
           "https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20";
@@ -266,23 +274,37 @@ class Admin extends React.Component {
           }
         });
         result.push(
-          <a href={url} key={uuid()}>
-            <Container key={uuid()} style={{ marginTop: "5%", marginBottom: "5%" }}>
-              <Media style={{ margin: "0% 3%" }}>
-                <img
-                  width={190}
-                  height={120}
-                  className="mr-3"
-                  src={src}
-                  alt={element.title}
-                />
-                <Media.Body className={Styles.fixed}>
-                  <h4 className="text-bold">{element.title}</h4>
-                  <p>{parseblog.parse(content)}</p>
-                </Media.Body>
-              </Media>
-            </Container>
-          </a>
+          <Media>
+            <Media.Body className={Styles.fixed}>
+              <div>
+                <a href={url}>
+                  <img
+                    width={30}
+                    height={30}
+                    className="mr-3"
+                    src={element.profile.avatar}
+                    alt={element.title}
+                  />
+                  {element.profile.first_name} {element.profile.last_name}{" "}
+                  <span>{date}</span>
+                </a>
+              </div>
+              <a href={url}>
+                <h4 className="text-bold">{element.title}</h4>
+                <div className={Styles.clamp}>{parseblog.parse(content)}</div>
+              </a>
+            </Media.Body>
+            <a href={url}>
+              <img
+                style={{ margin: "0% 9%" }}
+                width={190}
+                height={120}
+                className="mr-3"
+                src={src}
+                alt={element.title}
+              />
+            </a>
+          </Media>
         );
       });
       var temp = this.state.blogs;
@@ -293,15 +315,18 @@ class Admin extends React.Component {
     });
   };
 
-  getAcceptedBlogs = (event) => {
+  getAcceptedBlogs = () => {
     Axios.get("http://localhost:9000/admin/acceptedblogs").then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var blogs = res.data.blogs;
       var result = [];
       blogs.forEach((element) => {
+        var date = new Date(element.updatedAt);
+        date = date.toDateString();
         var url = "/admin/" + element.slug;
         var src =
           "https://firebasestorage.googleapis.com/v0/b/blostpog.appspot.com/o/image%2Fdefault.png?alt=media&token=2ab563d9-f8f1-4619-ab63-af66ee54ce20";
@@ -314,23 +339,37 @@ class Admin extends React.Component {
           }
         });
         result.push(
-          <a href={url} key={uuid()}>
-            <Container style={{ marginTop: "5%", marginBottom: "5%" }}>
-              <Media style={{ margin: "0% 3%" }}>
-                <img
-                  width={190}
-                  height={120}
-                  className="mr-3"
-                  src={src}
-                  alt={element.title}
-                />
-                <Media.Body className={Styles.fixed}>
-                  <h4 className="text-bold">{element.title}</h4>
-                  <p>{parseblog.parse(content)}</p>
-                </Media.Body>
-              </Media>
-            </Container>
-          </a>
+          <Media>
+            <Media.Body className={Styles.fixed}>
+              <div>
+                <a href={url}>
+                  <img
+                    width={30}
+                    height={30}
+                    className="mr-3"
+                    src={element.profile.avatar}
+                    alt={element.title}
+                  />
+                  {element.profile.first_name} {element.profile.last_name}{" "}
+                  <span>{date}</span>
+                </a>
+              </div>
+              <a href={url}>
+                <h4 className="text-bold">{element.title}</h4>
+                <div className={Styles.clamp}>{parseblog.parse(content)}</div>
+              </a>
+            </Media.Body>
+            <a href={url}>
+              <img
+                style={{ margin: "0% 9%" }}
+                width={190}
+                height={120}
+                className="mr-3"
+                src={src}
+                alt={element.title}
+              />
+            </a>
+          </Media>
         );
       });
       var temp = this.state.blogs;
@@ -366,6 +405,8 @@ class Admin extends React.Component {
             Delete
           </Button>
         );
+      } else {
+        tem.push(<spna key={uuid()}>{this.state.tag.count[i]}</spna>);
       }
       table.push(
         <tr>
@@ -406,6 +447,8 @@ class Admin extends React.Component {
             Delete
           </Button>
         );
+      } else {
+        tem.push(<spna key={uuid()}>{this.state.category.count[i]}</spna>);
       }
       table.push(
         <tr>
@@ -426,9 +469,10 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/deleteTag", {
       tagId: tagId,
     }).then((response) => {
-      if(response.data.loggedIn==false){
+      if (response.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var temp = this.state.tag;
       temp.delstatus = response.data.message;
@@ -451,9 +495,10 @@ class Admin extends React.Component {
     Axios.post("http://localhost:9000/admin/deleteCategory", {
       categoryId: categoryId,
     }).then((response) => {
-      if(response.data.loggedIn==false){
+      if (response.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var temp = this.state.category;
       temp.delstatus = response.data.message;
@@ -781,9 +826,11 @@ class Admin extends React.Component {
 
                   <Tab.Pane eventKey="#link5">
                     {pendingblogs.length > 0 ? (
-                      <Container>{pendingblogs}</Container>
+                      <div>{pendingblogs}</div>
                     ) : (
-                      <h4 className="text-center">No pending blogs</h4>
+                      <h4 className="text-center text-white">
+                        No pending blogs
+                      </h4>
                     )}
                   </Tab.Pane>
 
@@ -791,7 +838,9 @@ class Admin extends React.Component {
                     {acceptedblogs.length > 0 ? (
                       <Container>{acceptedblogs}</Container>
                     ) : (
-                      <h4 className="text-center">No accepted blogs</h4>
+                      <h4 className="text-center text-white">
+                        No accepted blogs
+                      </h4>
                     )}
                   </Tab.Pane>
                 </Tab.Content>

@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "authorId",
         foreignKeyConstraint: true,
       });
-
+      this.hasOne(models.Embeddings, {
+        as: "embed",
+        foreignKey: "blogId",
+        foreignKeyConstraint: true,
+      });
       this.hasMany(models.BlogCategory, {
         as: "categories",
         foreignKey: "blogId",

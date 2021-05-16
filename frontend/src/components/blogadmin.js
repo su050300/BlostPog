@@ -47,16 +47,16 @@ class BlogAdmin extends React.Component {
       authorId: "",
       blogStatus: "",
       data: "",
-      loaded:false,
+      loaded: false,
+      message: "",
     };
   }
   componentWillMount() {
     Axios.post("http://localhost:9000/admin/getblog", {
       slug: this.props.match.params.slug,
     }).then((res) => {
-      if(res.data.loggedIn==false){
-        this.props.history.push("/");
-        this.props.history.push("/admin");
+      if (res.data.loggedIn == false) {
+        <Redirect to={{ pathname: "/admin" }} />;
       }
       if (res.data.success == true) {
         this.setState({ ispresent: true });
@@ -88,7 +88,7 @@ class BlogAdmin extends React.Component {
     this.getCategories();
     setTimeout(() => {
       this.init();
-      this.setState({loaded:true});
+      this.setState({ loaded: true });
     }, 1000);
   }
   init = () => {
@@ -122,11 +122,15 @@ class BlogAdmin extends React.Component {
           id: this.state.blogId,
           data: outputData,
         }).then((res) => {
-          if(res.data.loggedIn==false){
+          if (res.data.loggedIn == false) {
             this.props.history.push("/");
             this.props.history.push("/admin");
+            return;
           }
-          console.log(res.data.message);
+          this.setState({ message: "saved" });
+          setTimeout(() => {
+            this.setState({ message: "" });
+          }, 2000);
         });
       })
       .catch((error) => {
@@ -136,20 +140,26 @@ class BlogAdmin extends React.Component {
   publish = () => {
     Axios.post("http://localhost:9000/admin/publishblog", {
       id: this.state.blogId,
-      author:this.state.authorId,
+      author: this.state.authorId,
     }).then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
-      console.log(res.data.message);
+      this.setState({ message: "published" });
+      setTimeout(() => {
+        this.setState({ message: "" });
+      }, 2000);
+      this.props.history.push("/admin");
     });
   };
   getTags = () => {
-    Axios.get("http://localhost:9000/getTags").then((res) => {
-      if(res.data.loggedIn==false){
+    Axios.get("http://localhost:9000/admin/getTags").then((res) => {
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var result = res.data.tags;
       var length = result.length;
@@ -161,10 +171,11 @@ class BlogAdmin extends React.Component {
     });
   };
   getCategories = () => {
-    Axios.get("http://localhost:9000/getCategories").then((res) => {
-      if(res.data.loggedIn==false){
+    Axios.get("http://localhost:9000/admin/getCategories").then((res) => {
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       var result = res.data.categories;
       var length = result.length;
@@ -176,13 +187,19 @@ class BlogAdmin extends React.Component {
     });
   };
   render() {
-    if(this.state.loaded==false)
-    {
+    if (this.state.loaded == false) {
       return <div></div>;
     }
     return (
       <div>
         <NavBar />
+        {this.state.message == "" ? (
+          <div></div>
+        ) : (
+          <Alert className="commonAlert" variant="danger">
+            {this.state.message}
+          </Alert>
+        )}
         {this.state.ispresent == false ? (
           <h4 className="text-center text-white">Blog Not Found</h4>
         ) : (
@@ -226,7 +243,7 @@ class BlogAdmin extends React.Component {
                       labelKey="name"
                       multiple
                       onChange={(e) => {
-                        this.setState({ categories: e });
+                        this.setState({ selectCategories: e });
                       }}
                       options={this.state.categories}
                       selected={this.state.selectCategories}
@@ -244,7 +261,7 @@ class BlogAdmin extends React.Component {
                       labelKey="name"
                       multiple
                       onChange={(e) => {
-                        this.setState({ tags: e });
+                        this.setState({ selectTags: e });
                       }}
                       options={this.state.tags}
                       selected={this.state.selectTags}
@@ -289,7 +306,11 @@ class BlogAdmin extends React.Component {
               </Card>
             </Col>
             <Col xs={3}>
-              <Tinymce id={this.state.blogId} status={this.state.blogStatus} author={this.state.authorId} />
+              <Tinymce
+                id={this.state.blogId}
+                status={this.state.blogStatus}
+                author={this.state.authorId}
+              />
             </Col>
           </Row>
         )}

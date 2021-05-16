@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
-import { Redirect } from "react-router-dom";
+import { Redirect,withRouter } from "react-router-dom";
 import {
   Button,
   Navbar,
@@ -35,7 +35,7 @@ import Styles from "../css/editor.module.css";
 import "../css/global.css";
 import "react-pro-sidebar/dist/css/styles.css";
 var editor = new EditorJS({});
-function Editor() {
+function Editor(props) {
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectTags, setselectTags] = useState([]);
@@ -88,7 +88,11 @@ function Editor() {
     });
   };
   var getTags = () => {
-    Axios.get("http://localhost:9000/getTags").then((res) => {
+    Axios.get("http://localhost:9000/getblog/getTags").then((res) => {
+      if (res.data.loggedIn == false) {
+        props.history.push("/");
+        return;
+      }
       var result = res.data.tags;
       var length = result.length;
       var temp = [];
@@ -99,7 +103,11 @@ function Editor() {
     });
   };
   var getCategories = () => {
-    Axios.get("http://localhost:9000/getCategories").then((res) => {
+    Axios.get("http://localhost:9000/getblog/getCategories").then((res) => {
+      if (res.data.loggedIn == false) {
+        props.history.push("/");
+        return;
+      }
       var result = res.data.categories;
       var length = result.length;
       var temp = [];
@@ -142,6 +150,10 @@ function Editor() {
             categories: selectCategories,
             data: outputData,
           }).then((res) => {
+            if (res.data.loggedIn == false) {
+              props.history.push("/");
+              return;
+            }
             setmessage(res.data.message);
             setTimeout(() => {
               setmessage("");
@@ -179,7 +191,10 @@ function Editor() {
       Axios.post("http://localhost:9000/save/image", {
         url: fileUrl,
       }).then((res) => {
-        console.log(res.data.message);
+        if (res.data.loggedIn == false) {
+          props.history.push("/");
+          return;
+        }
         fetchImages();
       });
     }
@@ -190,6 +205,10 @@ function Editor() {
   };
   var fetchImages = () => {
     Axios.get("http://localhost:9000/save/image").then((res) => {
+      if (res.data.loggedIn == false) {
+        props.history.push("/");
+        return;
+      }
       var allimages = res.data.result;
       var length = allimages.length;
       if (length == 0) {
@@ -333,6 +352,10 @@ function Editor() {
 
   var getBlogs = () => {
     Axios.get("http://localhost:9000/save/blogs").then((res) => {
+      if (res.data.loggedIn == false) {
+        props.history.push("/");
+        return;
+      }
       var myblogs = res.data.data;
       var result = [];
       var rows = myblogs.title.length;
@@ -347,8 +370,28 @@ function Editor() {
             return;
           }
         });
+        var date = new Date(myblogs.pubdate[i]);
+        date = date.toDateString();
+        var text = [];
+        if (myblogs.status[i] == false) {
+          text.push(
+            <div>
+              <span className="text-warning mr-2">Status : Pending</span>
+              <span>{date}</span>
+            </div>
+          );
+        }
+        else
+        {
+          text.push(
+            <div>
+              <span className="text-success mr-2">Status : Published</span>
+              <span>{date}</span>
+            </div>
+          );
+        }
         result.push(
-          <a href={url}>
+          <a href={url} key={uuid()}>
             <Container style={{ marginTop: "5%", marginBottom: "5%" }}>
               <Media style={{ margin: "0% 3%" }}>
                 <img
@@ -359,6 +402,7 @@ function Editor() {
                   alt={myblogs.title[i]}
                 />
                 <Media.Body className={Styles.fixedm}>
+                  {text}
                   <h4 className="text-bold">{myblogs.title[i]}</h4>
                   <p>{parseddata}</p>
                 </Media.Body>
@@ -514,4 +558,4 @@ function Editor() {
     </div>
   );
 }
-export default Editor;
+export default withRouter(Editor);

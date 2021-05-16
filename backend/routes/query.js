@@ -20,7 +20,7 @@ router.post("/query",redirectUserLogin, async function (req, res) {
   var authorId = req.body.authorId;
   var blogId = req.body.blogId;
   try {
-    var profile = Profile.findOne({
+    var profile = await Profile.findOne({
       where: { id: authorId },
       include: [
         {

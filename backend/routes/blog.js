@@ -72,17 +72,146 @@ router.post("/", async function (req, res) {
   }
 });
 
+router.post("/bytag", async function (req, res) {
+  var id = req.body.id;
+  try {
+    var blog = await Tag.findAll({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          as: "blogs",
+          model: BlogTag,
+        },
+      ],
+    });
+    if (blog) {
+      var result = [];
+      for (var i = 0; i < blog.length; i++) {
+        try {
+          var blg = await blogs.findOne({
+            where: {
+              id: blog[i].blogs[i].blogId,
+            },
+            include:[
+              {
+                as:'profile',
+                model:Profile,
+              }
+            ]
+          });
+          if(blg)
+          {
+            result.push(blg);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      res.json({success:true,result:result});
+    } else {
+      console.log("!error");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.post("/myblog", redirectUserLogin, async function (req, res) {
+  var slug = req.body.slug;
+  try {
+    var blog = await blogs.findOne({
+      where: {
+        slug: slug,
+      },
+    });
+    if (blog) {
+      try {
+        var data = {
+          content: [],
+          id: [],
+          category: [],
+          tag: [],
+          title: [],
+          slug: [],
+          pubdate: [],
+          author: [],
+          status: [],
+        };
+        data.content.push(JSON.parse(blog.content));
+        data.title.push(blog.title);
+        data.slug.push(blog.slug);
+        data.pubdate.push(blog.updatedAt);
+        data.id.push(blog.id);
+        data.author.push(blog.authorId);
+        data.status.push(blog.status);
+        data.message = "Success";
+        var tag = await getTags(blog.id);
+        var category = await getCategory(blog.id);
+        if (category) {
+          data.category.push(category);
+          if (tag) {
+            data.tag.push(tag);
+            res.json({ data: data, success: true });
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      res.json({ success: false, message: "blog not found" });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get("/getCategories", redirectUserLogin, async function (req, res) {
+  try {
+    var categories = await Category.findAll();
+    var result = [];
+    categories.forEach((element) => {
+      var obj = {};
+      obj[element.id] = element.category;
+      result.push(obj);
+    });
+    res.json({
+      categories: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get("/getTags", redirectUserLogin, async function (req, res) {
+  try {
+    var tags = await Tag.findAll();
+    var result = [];
+    tags.forEach((element) => {
+      var obj = {};
+      obj[element.id] = element.tag;
+      result.push(obj);
+    });
+    res.json({
+      tags: result,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 router.get("/all", async function (req, res) {
   try {
     var blog = await blogs.findAll({
       where: {
         status: true,
       },
-      include:[
+      include: [
         {
-          as:'profile',
-          model:Profile,
-        }
+          as: "profile",
+          model: Profile,
+        },
       ],
       order: [["updatedAt", "DESC"]],
     });

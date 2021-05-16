@@ -16,6 +16,7 @@ export default class Tinymce extends React.Component {
       authorId: this.props.author,
       blogId: this.props.id,
       blogStatus: this.props.status,
+      message: "",
     };
   }
   componentDidMount() {
@@ -31,13 +32,18 @@ export default class Tinymce extends React.Component {
       var content = this.editorRef.current.getContent();
       Axios.post("http://localhost:9000/admin/query", {
         content: content,
-        blogId: this.state.authorId,
-        authorId: this.state.blogId,
+        blogId: this.state.blogId,
+        authorId: this.state.authorId,
       }).then((res) => {
-        if(res.data.loggedIn==false){
+        if (res.data.loggedIn == false) {
           this.props.history.push("/");
           this.props.history.push("/admin");
+          return;
         }
+        this.setState({ message: "commented" });
+        setTimeout(() => {
+          this.setState({ message: "" });
+        }, 2000);
         if (res.data.success == true) {
           this.fetchComments();
         }
@@ -49,21 +55,27 @@ export default class Tinymce extends React.Component {
     Axios.post("http://localhost:9000/admin/delquery", {
       id: id.id,
     }).then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
+      this.setState({ message: "deleted" });
+      setTimeout(() => {
+        this.setState({ message: "" });
+      }, 2000);
       this.fetchComments();
     });
   };
   fetchComments = () => {
     Axios.post("http://localhost:9000/admin/getquery", {
-      blogId: this.state.authorId,
-      authorId: this.state.blogId,
+      blogId: this.state.blogId,
+      authorId: this.state.authorId,
     }).then((res) => {
-      if(res.data.loggedIn==false){
+      if (res.data.loggedIn == false) {
         this.props.history.push("/");
         this.props.history.push("/admin");
+        return;
       }
       if (res.data.success == true) {
         var data = res.data.result;
@@ -124,9 +136,20 @@ export default class Tinymce extends React.Component {
           className="text-center"
         >
           Queries
+          {this.state.message == "" ? (
+            <div></div>
+          ) : (
+            <Alert className="commonAlert" variant="danger">
+              {this.state.message}
+            </Alert>
+          )}
         </Card.Header>
         <Card.Body className={Styles.fixe}>
-          {this.state.comments.length > 0 ?(<div>{this.state.comments}</div>):(<p class="text-center">No Queries</p>)}
+          {this.state.comments.length > 0 ? (
+            <div>{this.state.comments}</div>
+          ) : (
+            <p className="text-center">No Queries</p>
+          )}
         </Card.Body>
 
         {this.state.blogStatus == true ? (

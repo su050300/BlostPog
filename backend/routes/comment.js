@@ -47,7 +47,7 @@ router.post("/delete", redirectUserLogin, async function (req, res) {
   }
 });
 
-router.post("/getComments", redirectUserLogin, async function (req, res) {
+router.post("/getComments", async function (req, res) {
   var blogId = req.body.blogId;
   try {
     var comments = await Comment.findAll({

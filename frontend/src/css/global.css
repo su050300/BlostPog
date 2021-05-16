@@ -86,7 +86,8 @@ a {
 }
 
 .col-2,
-.col-8 {
+.col-8,
+.col-6 {
   padding-right: 0px;
   padding-left: 0px;
 }
@@ -234,11 +235,17 @@ a:hover {
 
 .modal-90w .modal-content {
   height: 100% !important;
-  background:#2e4e8b !important;
+  background: #2e4e8b !important;
 }
 
 .close {
   color: white !important;
+}
+
+
+.commonAlert {
+  margin-top: 1% !important;
+  text-align: center;
 }
 
 @media (min-width: 992px) {

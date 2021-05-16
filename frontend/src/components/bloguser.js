@@ -51,12 +51,12 @@ class BlogUser extends React.Component {
     };
   }
   componentWillMount() {
-    Axios.post("http://localhost:9000/getblog", {
+    Axios.post("http://localhost:9000/getblog/myblog", {
       slug: this.props.match.params.slug,
     }).then((res) => {
       if (res.data.loggedIn == false) {
         this.props.history.push("/");
-        this.props.history.push("/admin");
+        return;
       }
       if (res.data.success == true) {
         this.setState({ ispresent: true });
@@ -124,7 +124,7 @@ class BlogUser extends React.Component {
         }).then((res) => {
           if (res.data.loggedIn == false) {
             this.props.history.push("/");
-            this.props.history.push("/admin");
+            return;
           }
           console.log(res.data.message);
         });
@@ -134,10 +134,10 @@ class BlogUser extends React.Component {
       });
   };
   getTags = () => {
-    Axios.get("http://localhost:9000/getTags").then((res) => {
+    Axios.get("http://localhost:9000/getblog/getTags").then((res) => {
       if (res.data.loggedIn == false) {
         this.props.history.push("/");
-        this.props.history.push("/admin");
+        return;
       }
       var result = res.data.tags;
       var length = result.length;
@@ -149,10 +149,10 @@ class BlogUser extends React.Component {
     });
   };
   getCategories = () => {
-    Axios.get("http://localhost:9000/getCategories").then((res) => {
+    Axios.get("http://localhost:9000/getblog/getCategories").then((res) => {
       if (res.data.loggedIn == false) {
         this.props.history.push("/");
-        this.props.history.push("/admin");
+        return;
       }
       var result = res.data.categories;
       var length = result.length;
@@ -198,6 +198,7 @@ class BlogUser extends React.Component {
                         name="title"
                         id="title"
                         value={this.state.title}
+                        readOnly
                       />
                     </Form>
                   </div>
@@ -212,10 +213,11 @@ class BlogUser extends React.Component {
                       labelKey="name"
                       multiple
                       onChange={(e) => {
-                        this.setState({ categories: e });
+                        this.setState({ selectCategories: e });
                       }}
                       options={this.state.categories}
                       selected={this.state.selectCategories}
+                      disabled
                     />
                   </Form.Group>
                 </Card.Body>
@@ -229,10 +231,11 @@ class BlogUser extends React.Component {
                       labelKey="name"
                       multiple
                       onChange={(e) => {
-                        this.setState({ tags: e });
+                        this.setState({ selectTags: e });
                       }}
                       options={this.state.tags}
                       selected={this.state.selectTags}
+                      disabled
                     />
                   </Form.Group>
                 </Card.Body>
