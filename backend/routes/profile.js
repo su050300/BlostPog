@@ -4,8 +4,8 @@ const router = express.Router();
 const { User } = require("../models");
 const { Profile } = require("../models");
 
-router.get("/", redirectUserLogin, async function (req, res) {
-  var userId = req.session.userid;
+router.post("/id", redirectUserLogin, async function (req, res) {
+  var userId = req.body.id;
   try {
     var user = await User.findOne({
       where: {
@@ -23,6 +23,27 @@ router.get("/", redirectUserLogin, async function (req, res) {
     console.log(err);
   }
 });
+
+router.post("/profid", async function (req, res) {
+  var id = req.body.id;
+  try {
+    var profile = await Profile.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: User,
+          as: "user",
+        },
+      ],
+    });
+    res.json({ profile: profile, success: true });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 router.post("/", redirectUserLogin, async function (req, res) {
   var first_name = req.body.first_name;
   var last_name = req.body.last_name;
@@ -54,7 +75,7 @@ router.post("/", redirectUserLogin, async function (req, res) {
           },
         }
       );
-      res.json({success:true});
+      res.json({ success: true });
     } else {
       console.log("!error");
     }

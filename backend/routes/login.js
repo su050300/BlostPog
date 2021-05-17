@@ -7,7 +7,7 @@ router.get("/", function (req, res) {
   if (req.session.username) {
     res.send({
       loggedIn: true,
-      username: req.session.username
+      id: req.session.userid
     });
   } else {
     res.send({
@@ -37,6 +37,7 @@ router.post("/", async function (req, res, next) {
           req.session.username = username;
           req.session.userid = user.id;
           res.json({
+            user:user,
             loggedIn: true
           });
         } else {

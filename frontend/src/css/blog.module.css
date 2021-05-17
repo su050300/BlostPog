@@ -4,5 +4,17 @@
 }
 .mdef{
     margin-top:5% !important;
-    margin-bottom:5% !important;
+    /* margin-bottom:5% !important; */
+}
+.clmp{
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+.clmp3{
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }

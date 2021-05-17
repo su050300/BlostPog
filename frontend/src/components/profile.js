@@ -35,7 +35,9 @@ class Profile extends React.Component {
     this.fetch();
   }
   fetch = () => {
-    Axios.get("http://localhost:9000/profile").then((res) => {
+    Axios.post("http://localhost:9000/profile/id",{
+      id:this.props.match.params.id,
+    }).then((res) => {
       if (res.data.loggedIn == false) {
         this.props.history.push("/");
         return;

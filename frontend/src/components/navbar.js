@@ -41,11 +41,15 @@ class NavBar extends React.Component {
       registerStatus: "",
       forgotOrlogin: false,
       showsearch: [],
+      profileurl: "",
     };
   }
   componentDidMount() {
     Axios.get("http://localhost:9000/login").then((res) => {
       if (res.data.loggedIn == true) {
+        this.setState({
+          profileurl: `http://localhost:3000/profile/${res.data.id}`,
+        });
         this.setState({ isLogin: true });
       } else {
         // this.props.history.push('/');
@@ -91,6 +95,9 @@ class NavBar extends React.Component {
       this.setState({ loginStatus: response.data.message });
       console.log(response.data.loggedIn);
       if (response.data.loggedIn == false) {
+        this.setState({
+          profileurl: `http://localhost:3000/profile/${response.data.user.id}`,
+        });
         setTimeout(() => {
           this.props.history.push("/login");
           this.props.history.push("/");
@@ -208,7 +215,9 @@ class NavBar extends React.Component {
                   ></img>
                 }
               >
-                <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
+                <NavDropdown.Item href={this.state.profileurl}>
+                  Profile
+                </NavDropdown.Item>
                 <NavDropdown.Item href="/editor">
                   Write Your Story
                 </NavDropdown.Item>

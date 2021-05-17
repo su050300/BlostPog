@@ -87,7 +87,8 @@ a {
 
 .col-2,
 .col-8,
-.col-6 {
+.col-6,
+.col-4 {
   padding-right: 0px;
   padding-left: 0px;
 }
